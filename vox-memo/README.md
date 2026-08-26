@@ -78,8 +78,12 @@ downstream still knows a step failed.
 
 ---
 
-## What it cost to run
+## How the model spend is shaped
 
-Haiku carries enrichment and vision, which is the high-volume work. Embeddings run on the small
-OpenAI model. The expensive reasoning models appear nowhere in the hot path, because nothing in
-this pipeline needs them.
+No per-request figure is published for this system: the traffic is one user's, so any number here
+would describe a sample of one rather than an operating cost.
+
+What is decided is the split. Haiku carries enrichment and vision, which is the high-volume work.
+Embeddings run on the small OpenAI model. The expensive reasoning models appear nowhere in the hot
+path, because nothing in this pipeline needs them — and a pipeline that fires on every capture is
+exactly where an unnecessary large-model call compounds.
