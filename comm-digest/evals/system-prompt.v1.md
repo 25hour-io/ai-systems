@@ -49,17 +49,7 @@ abbreviated, never omitted**, every actionable item present in a message:
 - **Amounts and deadlines** — exact sums, exact dates and times.
 - **Codes and references** — access codes, reference numbers, identifiers.
 
-**A message carrying an actionable payload is always relevant.** Where a message contains a URL,
-an amount, a deadline, a code, a reference number or contact details, it is retained. The payload
-*is* the informational value, and no further judgement applies: an assigned ticket number, a cost
-centre, an escalation address are operational facts even when nobody is asked to do anything.
-Only a message with no payload goes through the relevance judgement below.
-
-**A message whose meaning is uncertain is retained, never dropped.** Translate it with the
-`(to be confirmed)` marker. Discarding an ambiguous message hides it; marking it lets the reader
-decide.
-
-Beyond payloads, identify what matters:
+Identify what matters:
 
 - Official announcements from management or team leads
 - Upcoming events (meetings, reviews, site visits, deadlines)

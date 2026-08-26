@@ -56,10 +56,19 @@ data gets copied character for character: full URLs, exact amounts, phone number
 deadlines. A summarizer that paraphrases a payment link has destroyed the message. This split is
 the single most important instruction in the prompt.
 
-⚠️ **This guardrail is `Constrained`, not `Structural`.** It is a prompt-level rule: the model is
-told to copy payloads exactly, and nothing downstream checks that it did. A prompt constraint is
-useful; it is not a mechanical guarantee. So it is **measured rather than asserted** — see the
-[evaluation harness](./evals) for the recall figure, the model it was run against, and the date.
+⚠️ **Measured, not asserted.** This is a prompt-level rule, so it was put on a bench:
+**[40 labelled cases](./evals)**, exact substring matching, no model judging another model.
+
+The deployed prompt reproduced **73.7 %** of payloads. The failure was not paraphrasing — the
+model discarded whole messages as irrelevant, including an assigned ticket number, a cost centre
+and an escalation address. A retention rule lifted that to **92.1 %**, and no further prompt
+iteration is expected to reach 100 %.
+
+**That ceiling is the point.** A prompt rule improves behaviour; it does not guarantee it. Which
+is why [`validate.mjs`](./evals/validate.mjs) extracts payloads from the input and checks them
+against the output: structured payloads are now `Verified`, payloads written in prose stay
+`Constrained`. Full numbers, limits and the untested edges are in
+[`evals/README.md`](./evals/README.md).
 
 **Never invent.** Ambiguous content is translated with a "to be confirmed" marker. Missing
 information stays missing. Same level: `Constrained`.
