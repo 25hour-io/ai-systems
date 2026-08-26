@@ -1,7 +1,7 @@
 # Hubert
 
-An orchestration layer over business tools, reached through chat. Ask it anything; it routes to
-the agent that owns that surface and answers.
+An agentic orchestration layer over business tools, reached through chat. Ask it anything; it
+routes to the agent that owns that surface and answers.
 
 **Live.** 10 agents deployed on Anthropic Managed Agents.
 
@@ -21,7 +21,7 @@ the agent that owns that surface and answers.
 The first architecture was one agent holding every capability: 14 MCP servers, roughly 140 tool
 definitions, about 57,000 input tokens on every single request.
 
-**Measured: 0.25 $ per request.** Including "what's on my calendar today?".
+**`MEASURED`: 0.25 $ per request.** Including "what's on my calendar today?".
 
 The diagnosis is the interesting part. Around **70 % of that cost was tool definitions** — the
 full catalogue shipped on every call, whether or not a single one of those tools was used. The
@@ -37,17 +37,17 @@ tools load per query.
 
 Two effects follow:
 
-- **Per-request cost drops to an estimated ~0.006 $** — a factor of roughly 40, because the tool
-  catalogue stops travelling with every request.
-- **Model choice becomes per-agent.** A small model routes and handles simple operations; a
+- **`DESIGN TARGET`: per-request cost drops to ~0.006 $** — a factor of roughly 40, because the
+  tool catalogue stops travelling with every request.
+- **Model routing becomes per-agent.** A small model routes and handles simple operations; a
   larger one is reserved for work that needs it, such as drafting mail.
 
 A third effect is structural: the workflow engine comes out of the middle as orchestration
 middleware, which removes a hop and a moving part.
 
-**Status of the numbers:** the 0.25 $ figure is measured on the running system. The ~0.006 $
-figure is the design target for the callable-agent architecture. The sub-agent pattern itself was
-already validated in production on a master agent running since 2025.
+**Status of the numbers:** the 0.25 $ figure is `MEASURED` on the running system. The ~0.006 $
+figure is a `DESIGN TARGET` for the callable-agent architecture, not an observed result. The
+sub-agent pattern itself was already validated in production on a master agent running since 2025.
 
 ---
 

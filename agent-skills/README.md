@@ -42,7 +42,7 @@ half-translated page.
 
 Produces a tailored CV and cover letter from a job posting.
 
-The mechanism is the point, and it is the same one described in the
+The mechanism is `Structural`, and it is the same one described in the
 [role matching pipeline](../role-matching): the source CV is a verified superset, deliberately too
 long to send. Each application is a copy that is only ever **cut down**. Removal cannot fabricate.
 
@@ -76,8 +76,20 @@ consonant outright. Wrong vocalisation is worse than none.
 
 ## What runs through all three
 
-**No invention, enforced structurally.** Each skill names the thing it must never make up and
-builds a mechanism that prevents it: a fact ceiling, an absolute matching rule, a fallback
-banner. None of them relies on the model choosing to behave.
+**Every skill names what it must never make up.** They do not all enforce it the same way, and
+the difference is stated rather than blurred:
 
-**The human keeps the decision.** These skills prepare work. They do not send it.
+| Skill | Guardrail | Level |
+|---|---|---|
+| `application-builder` | the fact ceiling — generation only removes from a verified superset | **Structural** |
+| `prospect-pitch` | the absolute matching rule, the "to be confirmed" pricing marker | **Constrained** |
+| `interview-trainer` | model answers composed only of template facts | **Constrained** |
+
+Only the first is mechanical. The other two are prompt-level rules that hold because the
+procedure names them and a human reads the output. See the levels in the
+[repository README](../README.md).
+
+**Human-in-the-loop by design.** These skills prepare work. They do not send it. On the one
+guardrail that is `Constrained` and carries real consequence — a second model rewriting a letter
+with none of the rules — the procedure lists the six things to check on its output before anyone
+sees it.

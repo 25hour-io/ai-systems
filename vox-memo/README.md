@@ -5,7 +5,7 @@ it, tags it, links it to related entries, and makes the whole corpus searchable 
 
 **Live at [memo.25hour.io](https://memo.25hour.io)** — web and native Android from one codebase.
 
-10,500 lines of TypeScript · 97 commits · 19 API routes
+10,500 lines of TypeScript · 97 commits · 19 API routes · `MEASURED`
 
 ---
 
@@ -29,8 +29,8 @@ vectors · Deepgram Nova-3 for transcription · Apify for URL crawling.
 
 ## The AI pipeline
 
-Five steps, fired and forgotten when a memo is created. Each step isolates its own failures, so a
-crawl timeout never blocks the embedding.
+Five steps, fired and forgotten when a memo is created. Failure isolation per step, so a crawl
+timeout never blocks the embedding.
 
 ```
 create memo
@@ -38,7 +38,7 @@ create memo
   ├─ 2. enrich  — Haiku extracts title, project, summary, tags, entities,
   │               cleaned text, reminder date, priority, language
   ├─ 3. embed   — vector over content + tags, capped at 8000 chars
-  ├─ 4. link    — nearest neighbours over pgvector, edge written above 0.75
+  ├─ 4. link    — retrieval over pgvector, nearest neighbours, edge written above 0.75
   └─ 5. mark    — ai_processed = true
 ```
 

@@ -3,7 +3,7 @@
 An always-on agent that watches noisy group channels, drops the noise, translates what matters,
 and returns a structured digest ending in explicit action items.
 
-**Live since May 2026.** Runs every 5 minutes. 30-node n8n workflow.
+**Live since May 2026.** Runs every 5 minutes. 30-node n8n workflow. `MEASURED` in production.
 
 ---
 
@@ -56,8 +56,13 @@ data gets copied character for character: full URLs, exact amounts, phone number
 deadlines. A summarizer that paraphrases a payment link has destroyed the message. This split is
 the single most important instruction in the prompt.
 
+⚠️ **This guardrail is `Constrained`, not `Structural`.** It is a prompt-level rule: the model is
+told to copy payloads exactly, and nothing downstream checks that it did. A prompt constraint is
+useful; it is not a mechanical guarantee. So it is **measured rather than asserted** — see the
+[evaluation harness](./evals) for the recall figure, the model it was run against, and the date.
+
 **Never invent.** Ambiguous content is translated with a "to be confirmed" marker. Missing
-information stays missing.
+information stays missing. Same level: `Constrained`.
 
 **Explain the empty result.** When nothing qualifies, the agent still states in one sentence what
 the channel was discussing, then concludes. This came out of field use: a bare "nothing relevant"
@@ -69,8 +74,9 @@ with Hebrew flips the entire block in the messaging client and the digest become
 Every output line therefore opens with a Latin-script label, which forces left-to-right layout.
 This one is invisible until you ship to a real reader in a real client.
 
-**Idempotent by design.** Processed message IDs are committed after each run. A restart, an
-overlap or a retry never re-sends a digest.
+**Idempotency by design.** Processed message IDs are committed after each run. A restart, an
+overlap or a retry never re-sends a digest. Failure isolation per media branch: a failed PDF never
+blocks the text digest.
 
 ---
 

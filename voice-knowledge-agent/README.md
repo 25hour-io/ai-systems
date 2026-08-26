@@ -3,7 +3,7 @@
 A real-time voice agent that answers spoken questions from a source corpus. You talk, it
 retrieves, it answers, and it answers only from what it retrieved.
 
-**Working prototype.** Real-time voice over WebSocket, retrieval over pgvector.
+**`PROTOTYPE`.** Real-time voice over WebSocket, retrieval-augmented generation over pgvector.
 
 ---
 
@@ -33,19 +33,30 @@ correct one, and it is gone the moment it is spoken.
 
 So the architecture holds the answer to the corpus:
 
-**Retrieve first, answer second.** Every response is built on passages pulled from the indexed
-corpus. The model composes; the corpus supplies the facts.
+**Retrieve first, answer second.** Retrieval-augmented generation over the indexed corpus: every
+response is built on passages pulled from it. The model composes; the corpus supplies the facts.
+Bounding what the model sees is an architectural constraint, and it is the strongest control here.
 
 **Say when there is nothing.** An empty or weak retrieval produces "I don't have that", which is
 the correct answer and the one users trust. A plausible-sounding guess destroys the trust the
 whole system runs on.
 
+⚠️ **The refusal itself is `Constrained`.** Retrieval bounds what the model sees; nothing
+mechanically forces the answer to stay inside what came back. Groundedness here rests on a
+prompt-level rule, and measuring it against a labelled question set is exactly what stands between
+this prototype and a product.
+
 **The corpus is the boundary.** Coverage is expanded by indexing more sources. It is never
 expanded by loosening the constraint.
 
-This is the same guarantee that the [role matching pipeline](../role-matching) enforces on generated documents and the
-[comm digest](../comm-digest) enforces on payload data. Three systems, three mechanisms, one
-principle: the structure prevents invention, so nobody has to remember to check for it.
+Three systems attack the same problem, and it is worth being precise about how each one holds.
+The [role matching pipeline](../role-matching) enforces a `Structural` fact ceiling on generated
+documents: removal cannot fabricate, so nothing has to be checked. This agent and the
+[comm digest](../comm-digest) both sit at `Constrained`: the architecture narrows what the model
+sees, and a prompt-level rule asks it to stay inside.
+
+Same principle, three different strengths. Saying so is the point — an unmeasured constraint
+described as a guarantee is the first thing a technical reader will test.
 
 ---
 

@@ -40,21 +40,40 @@ the expertise.
 
 ## Four things these systems have in common
 
-**Cost is a design input.** Every system splits work across models by the judgment each task
-requires. Cheap models carry volume; expensive models are called once, where the decision lives.
-The role matching pipeline runs on a hard 29 $ ceiling and reports its cost per source. Hubert's
-per-request cost was measured at 0.25 $ before it was redesigned around that number.
+**Cost governance is a design input.** Every system splits work across models by the judgment each
+task requires. Cheap models carry volume; expensive models are called once, where the decision
+lives. The role matching pipeline runs on a hard 29 $ ceiling and reports its unit economics per
+source. Hubert's per-request cost was measured at 0.25 $ before it was redesigned around that
+number.
 
-**The model is never trusted to be right.** Each system carries a structural guarantee against
-invented output. Document generation only ever removes text from a verified superset, so removal
-cannot fabricate. The comm digest reproduces payloads verbatim and marks ambiguity. The voice
-agent answers from retrieved sources and says when it has none.
+**The model is never trusted to be right — and the guardrails are not all equally strong.** Every
+system here controls invented output, but through mechanisms of different strength. Calling all of
+them a guarantee would flatter the weakest and devalue the strongest, so they are named separately
+across this repository:
+
+| Level | What it means | Where it applies |
+|---|---|---|
+| **Structural** | An invalid output is mechanically impossible to produce | The **fact ceiling**: generation only removes text from a verified superset, so removal cannot fabricate |
+| **Verified** | The output is read back and compared against the input | Tracking-sheet writes, re-read and compared field by field; divergence exits non-zero |
+| **Constrained** | A prompt-level rule, not validated downstream | Verbatim payload preservation; the voice agent's refusal; the "to be confirmed" marker |
+
+`Structural` needs no trust. `Verified` catches the failure after the fact. `Constrained` asks the
+model to behave and does not check. Knowing which one you have is the difference between
+hallucination control and hoping.
+
+The weakest of the three is measured rather than asserted: see the
+[evaluation harness](./comm-digest/evals) for verbatim preservation.
 
 **A success response is not proof of success.** Webhooks that returned 200 without writing
-anything are why the pipeline now reads its rows back and compares them field by field.
+anything are why the pipeline now applies deterministic validation: it reads its rows back and
+compares them field by field.
 
 **Everything runs unattended.** Scheduled, idempotent, and safe to restart. Processed identifiers
-are committed so a retry never duplicates work.
+are persisted so a retry never duplicates work, and each pipeline stage isolates its own failures.
+
+**Evidence labels.** Every figure in this repository carries its status: `MEASURED` on a running
+system, `ESTIMATED` from a model, `DESIGN TARGET` for an architecture not yet in production,
+`PROTOTYPE` for a system that works end to end but is not deployed.
 
 ---
 
