@@ -33,8 +33,8 @@ happens to be left.
 
 Source names are replaced by labels below. The reasoning is what transfers.
 
-Cost per run was measured per source, then cross-referenced against postings that actually
-cleared scoring:
+`MEASURED` over one full billing cycle. Cost per run was measured per source, then
+cross-referenced against postings that actually cleared scoring:
 
 | Source | $/run | Verdict |
 |---|---|---|
@@ -48,7 +48,7 @@ cleared scoring:
 | ~~Niche board H~~ | 0.050 | **Cut.** Zero postings since activation |
 
 Before: 0.61 $/run, ~26.5 $ per cycle — **91 % of the ceiling**.
-After: 0.33 $/run, ~14.5 $ per cycle — **45 % less, with retained postings unchanged**.
+After: 0.33 $/run, ~14.5 $ per cycle — **45 % less, with retained postings unchanged**. `MEASURED`.
 
 ### Look for a feed before paying a scraper
 
@@ -65,9 +65,11 @@ pay for its compute. The one advertised that way was the most expensive line on 
 
 ---
 
-## Two guarantees against invented output
+## Two controls against invented output
 
-**Removal cannot fabricate.** The candidate document template is a superset of verified facts,
+One is `Structural`, one is `Verified` — see the levels in the [repository README](../README.md).
+
+**`Structural` — removal cannot fabricate.** The candidate document template is a superset of verified facts,
 deliberately too long to send. Every generated document is a copy that only ever gets **cut
 down**. Starting from a long verified document and removing is structurally safe; starting from a
 short one and filling it in is where a fictional employer gets in. A missing fact is added to the
@@ -76,11 +78,11 @@ template, never to a generated document.
 The procedure that enforces this is published as
 [`application-builder`](../agent-skills/application-builder.md).
 
-**A 200 response is not proof of a write.** The tracking sheet webhook returned success without
+**`Verified` — a 200 response is not proof of a write.** The tracking sheet webhook returned success without
 writing anything. Worse, the underlying operation invented rather than complained: updating an
 absent identifier created a row, and sending an unknown field created a column — a clean 200 in
-both cases. So the pipeline now checks the row exists before writing, reads it back after, and
-compares field by field. Divergence exits non-zero.
+both cases. So the pipeline now applies deterministic validation: it checks the row exists before writing,
+reads it back after, and compares field by field. Divergence exits non-zero.
 
 ---
 
