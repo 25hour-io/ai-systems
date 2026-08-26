@@ -106,6 +106,12 @@ export async function processMemo(
     console.error("Pipeline: URL crawl failed", err);
   }
 
+  // Tags produced by this run. `memo` was loaded before enrichment, so `memo.tags` still holds
+  // the pre-enrichment value and must not feed the embedding below.
+  let currentTags: string[] = (memo.tags as string[] | null) ?? [];
+  let enrichmentOk = false;
+  let embeddingOk = false;
+
   try {
     const now = new Date();
     const today = now.toISOString().split("T")[0];
@@ -151,12 +157,15 @@ export async function processMemo(
       .from("memos")
       .update(updatePayload)
       .eq("id", memoId);
+
+    if (Array.isArray(enrichment.tags)) currentTags = enrichment.tags;
+    enrichmentOk = true;
   } catch (err) {
     console.error("Pipeline: enrichment failed", err);
   }
 
   try {
-    const embeddingText = [content, ...(memo.tags ?? [])]
+    const embeddingText = [content, ...currentTags]
       .filter(Boolean)
       .join(" ");
 
@@ -166,6 +175,8 @@ export async function processMemo(
       .from("memos")
       .update({ embedding: JSON.stringify(embedding) })
       .eq("id", memoId);
+
+    embeddingOk = true;
   } catch (err) {
     console.error("Pipeline: embedding failed", err);
   }
@@ -197,8 +208,22 @@ export async function processMemo(
     console.error("Pipeline: linking failed", err);
   }
 
-  await supabase
-    .from("memos")
-    .update({ ai_processed: true })
-    .eq("id", memoId);
+  // Only claim the memo is processed when the steps a reader depends on actually succeeded.
+  // Enrichment carries the title, tags and summary; the embedding carries semantic search.
+  // Crawling and linking are best-effort: a memo without them is still usable and complete.
+  //
+  // Marking a half-processed memo as done is how it becomes invisible to any future retry —
+  // it silently stops being a candidate for reprocessing, and nothing ever fixes it.
+  if (enrichmentOk && embeddingOk) {
+    await supabase
+      .from("memos")
+      .update({ ai_processed: true })
+      .eq("id", memoId);
+  } else {
+    console.error(
+      "Pipeline: leaving ai_processed false for reprocessing",
+      memoId,
+      { enrichmentOk, embeddingOk },
+    );
+  }
 }

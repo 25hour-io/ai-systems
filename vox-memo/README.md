@@ -69,6 +69,13 @@ routes as the web app.
 **Row-level security on every table**, with three separate auth paths: session cookies for app
 routes, an API key header for agent routes, a bearer secret for cron routes.
 
+**Done means done.** `ai_processed` is set only when enrichment and embedding both succeed.
+Crawling and linking are best-effort — a memo without them is still complete. This is a fix, not
+an original design: the flag used to be written unconditionally, so a memo whose enrichment had
+failed was marked processed and quietly stopped being a candidate for any retry. An external
+review of this published file caught it. Failure isolation per step is only safe when something
+downstream still knows a step failed.
+
 ---
 
 ## What it cost to run
