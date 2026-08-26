@@ -1,0 +1,965 @@
+{
+  "provider": "openai",
+  "model": "gpt-4o",
+  "metrics": {
+    "payload_recall": {
+      "pass": 35,
+      "total": 38
+    },
+    "noise_rejection": {
+      "pass": 5,
+      "total": 5
+    },
+    "empty_case_explained": {
+      "pass": 5,
+      "total": 5
+    },
+    "ambiguity_marked": {
+      "pass": 0,
+      "total": 5
+    },
+    "no_invention": {
+      "pass": 40,
+      "total": 40
+    },
+    "cases_fully_passing": {
+      "pass": 33,
+      "total": 40
+    }
+  },
+  "results": [
+    {
+      "id": "url-01",
+      "family": "url",
+      "message": "Please complete the safety form before Friday: https://forms.example.org/d/e/1FAIpQLSc9Xk2/viewform?usp=sf_link",
+      "payloads": [
+        "https://forms.example.org/d/e/1FAIpQLSc9Xk2/viewform?usp=sf_link"
+      ],
+      "expect_empty": false,
+      "expect_marker": false,
+      "note": "",
+      "output": "```\n*Channel: Operations*\nFrom: [unknown]\nTime: [unknown]\nMessage: Please complete the safety form before Friday: https://forms.example.org/d/e/1FAIpQLSc9Xk2/viewform?usp=sf_link\n\n*Action items*\n• *Before Friday* — Complete the safety form at https://forms.example.org/d/e/1FAIpQLSc9Xk2/viewform?usp=sf_link (Operations)\n```",
+      "error": null,
+      "checks": [
+        {
+          "kind": "payload",
+          "needle": "https://forms.example.org/d/e/1FAIpQLSc9Xk2/viewform?usp=sf_link",
+          "pass": true
+        }
+      ],
+      "invented": [],
+      "ok": true
+    },
+    {
+      "id": "url-02",
+      "family": "url",
+      "message": "Q3 review call moved. New link: https://meet.example.com/abc-defg-hij",
+      "payloads": [
+        "https://meet.example.com/abc-defg-hij"
+      ],
+      "expect_empty": false,
+      "expect_marker": false,
+      "note": "",
+      "output": "```\n*Channel: Operations*\nFrom: [unknown sender]\nTime: [unknown time]\nMessage: Q3 review call moved. New link: https://meet.example.com/abc-defg-hij\n```\n\n*Action items*\n• *As soon as possible* — Use the new link for the Q3 review call: https://meet.example.com/abc-defg-hij (Operations)",
+      "error": null,
+      "checks": [
+        {
+          "kind": "payload",
+          "needle": "https://meet.example.com/abc-defg-hij",
+          "pass": true
+        }
+      ],
+      "invented": [],
+      "ok": true
+    },
+    {
+      "id": "url-03",
+      "family": "url",
+      "message": "Expense policy updated, read it here https://intranet.example.com/policies/expenses-2026-v3.pdf before submitting.",
+      "payloads": [
+        "https://intranet.example.com/policies/expenses-2026-v3.pdf"
+      ],
+      "expect_empty": false,
+      "expect_marker": false,
+      "note": "",
+      "output": "```\n*Channel: Operations*\nFrom: [Sender not specified]\nTime: [Time not specified]\nMessage: Expense policy updated, read it here https://intranet.example.com/policies/expenses-2026-v3.pdf before submitting.\n```",
+      "error": null,
+      "checks": [
+        {
+          "kind": "payload",
+          "needle": "https://intranet.example.com/policies/expenses-2026-v3.pdf",
+          "pass": true
+        }
+      ],
+      "invented": [],
+      "ok": true
+    },
+    {
+      "id": "url-04",
+      "family": "url",
+      "message": "Join the new logistics channel: https://chat.example.com/JOIN-9fKq2Lm?src=invite&ref=ops",
+      "payloads": [
+        "https://chat.example.com/JOIN-9fKq2Lm?src=invite&ref=ops"
+      ],
+      "expect_empty": false,
+      "expect_marker": false,
+      "note": "",
+      "output": "```\n*Channel: Operations (Operations)*\nFrom: [Sender Unknown]\nTime: [Unknown]\nMessage: Join the new logistics channel: https://chat.example.com/JOIN-9fKq2Lm?src=invite&ref=ops\n```\n\n*Action items*\n• *As soon as possible* — Join the new logistics channel via https://chat.example.com/JOIN-9fKq2Lm?src=invite&ref=ops (Operations)",
+      "error": null,
+      "checks": [
+        {
+          "kind": "payload",
+          "needle": "https://chat.example.com/JOIN-9fKq2Lm?src=invite&ref=ops",
+          "pass": true
+        }
+      ],
+      "invented": [],
+      "ok": true
+    },
+    {
+      "id": "url-05",
+      "family": "url",
+      "message": "Pay the supplier deposit through https://pay.example.com/inv/2026-0841?token=a91f3c , due Monday.",
+      "payloads": [
+        "https://pay.example.com/inv/2026-0841?token=a91f3c"
+      ],
+      "expect_empty": false,
+      "expect_marker": false,
+      "note": "",
+      "output": "```\n*Channel: Operations*\nFrom: [Unknown]\nTime: [Unknown]\nMessage: Pay the supplier deposit through https://pay.example.com/inv/2026-0841?token=a91f3c , due Monday.\n\n*Action items*\n• *By Monday* — Pay the supplier deposit through https://pay.example.com/inv/2026-0841?token=a91f3c (Operations)\n```",
+      "error": null,
+      "checks": [
+        {
+          "kind": "payload",
+          "needle": "https://pay.example.com/inv/2026-0841?token=a91f3c",
+          "pass": true
+        }
+      ],
+      "invented": [],
+      "ok": true
+    },
+    {
+      "id": "url-06",
+      "family": "url",
+      "message": "Two links today. Timesheet https://hr.example.com/timesheet and holiday calendar https://hr.example.com/calendar/2026",
+      "payloads": [
+        "https://hr.example.com/timesheet",
+        "https://hr.example.com/calendar/2026"
+      ],
+      "expect_empty": false,
+      "expect_marker": false,
+      "note": "",
+      "output": "```\n*Channel: Operations*\nFrom: [Sender Unknown]\nTime: [Unknown]\nMessage: Two links today. Timesheet https://hr.example.com/timesheet and holiday calendar https://hr.example.com/calendar/2026\n```\n\n*Action items*\n• *As soon as possible* — Access the timesheet at https://hr.example.com/timesheet (Operations)\n• *As soon as possible* — View the holiday calendar at https://hr.example.com/calendar/2026 (Operations)",
+      "error": null,
+      "checks": [
+        {
+          "kind": "payload",
+          "needle": "https://hr.example.com/timesheet",
+          "pass": true
+        },
+        {
+          "kind": "payload",
+          "needle": "https://hr.example.com/calendar/2026",
+          "pass": true
+        }
+      ],
+      "invented": [],
+      "ok": true
+    },
+    {
+      "id": "url-07",
+      "family": "url",
+      "message": "Training deck is on the drive: https://drive.example.com/file/d/1a2B3c4D5e6F/view?usp=sharing",
+      "payloads": [
+        "https://drive.example.com/file/d/1a2B3c4D5e6F/view?usp=sharing"
+      ],
+      "expect_empty": false,
+      "expect_marker": false,
+      "note": "",
+      "output": "```\n*Channel: Operations*\nFrom: [Sender]\nTime: [Time not provided]\nMessage: Training deck is on the drive: https://drive.example.com/file/d/1a2B3c4D5e6F/view?usp=sharing\n```",
+      "error": null,
+      "checks": [
+        {
+          "kind": "payload",
+          "needle": "https://drive.example.com/file/d/1a2B3c4D5e6F/view?usp=sharing",
+          "pass": true
+        }
+      ],
+      "invented": [],
+      "ok": true
+    },
+    {
+      "id": "url-08",
+      "family": "url",
+      "message": "Vendor portal changed to https://portal.example.com:8443/login — old address stops working on 1 June.",
+      "payloads": [
+        "https://portal.example.com:8443/login"
+      ],
+      "expect_empty": false,
+      "expect_marker": false,
+      "note": "",
+      "output": "```\n*Channel: Operations*\nFrom: [unknown sender]\nTime: [unknown time]\nMessage: Vendor portal changed to https://portal.example.com:8443/login — old address stops working on 1 June.\n```\n\n*Action items*\n• *Before 1 June* — Update bookmarks to the new vendor portal address: https://portal.example.com:8443/login (Operations)",
+      "error": null,
+      "checks": [
+        {
+          "kind": "payload",
+          "needle": "https://portal.example.com:8443/login",
+          "pass": true
+        }
+      ],
+      "invented": [],
+      "ok": true
+    },
+    {
+      "id": "url-09",
+      "family": "url",
+      "message": "Sign the amendment here https://sign.example.com/r/XK4-99QT#page=2 , it opens on the right page.",
+      "payloads": [
+        "https://sign.example.com/r/XK4-99QT#page=2"
+      ],
+      "expect_empty": false,
+      "expect_marker": false,
+      "note": "",
+      "output": "```\n*Channel: Operations*\nFrom: [unknown sender]\nTime: [unknown time]\nMessage: Sign the amendment here https://sign.example.com/r/XK4-99QT#page=2 , it opens on the right page.\n```\n\n*Action items*\n• *As soon as possible* — Sign the amendment at https://sign.example.com/r/XK4-99QT#page=2 (Operations)",
+      "error": null,
+      "checks": [
+        {
+          "kind": "payload",
+          "needle": "https://sign.example.com/r/XK4-99QT#page=2",
+          "pass": true
+        }
+      ],
+      "invented": [],
+      "ok": true
+    },
+    {
+      "id": "url-10",
+      "family": "url",
+      "message": "Incident report template: https://wiki.example.com/ops/incident?template=sev2&lang=en",
+      "payloads": [
+        "https://wiki.example.com/ops/incident?template=sev2&lang=en"
+      ],
+      "expect_empty": false,
+      "expect_marker": false,
+      "note": "",
+      "output": "```\n*Channel: Operations*\nFrom: [unknown]\nTime: [unknown]\nMessage: Incident report template: https://wiki.example.com/ops/incident?template=sev2&lang=en\n```",
+      "error": null,
+      "checks": [
+        {
+          "kind": "payload",
+          "needle": "https://wiki.example.com/ops/incident?template=sev2&lang=en",
+          "pass": true
+        }
+      ],
+      "invented": [],
+      "ok": true
+    },
+    {
+      "id": "amt-01",
+      "family": "amount",
+      "message": "Team contribution for the leaving gift is 37.50 per person, before Thursday 14 May.",
+      "payloads": [
+        "37.50",
+        "Thursday 14 May"
+      ],
+      "expect_empty": false,
+      "expect_marker": false,
+      "note": "",
+      "output": "**Channel: Operations**\nFrom: [Sender]\nTime: [Time not provided]\nMessage: Team contribution for the leaving gift is 37.50 per person, before Thursday 14 May.\n\n*Action items*\n• *Before Thursday 14 May* — Contribute 37.50 per person for the leaving gift (Operations)",
+      "error": null,
+      "checks": [
+        {
+          "kind": "payload",
+          "needle": "37.50",
+          "pass": true
+        },
+        {
+          "kind": "payload",
+          "needle": "Thursday 14 May",
+          "pass": true
+        }
+      ],
+      "invented": [],
+      "ok": true
+    },
+    {
+      "id": "amt-02",
+      "family": "amount",
+      "message": "Supplier quote came back at 12,480 EUR excluding VAT. Approval needed by 03/06/2026.",
+      "payloads": [
+        "12,480 EUR",
+        "03/06/2026"
+      ],
+      "expect_empty": false,
+      "expect_marker": false,
+      "note": "",
+      "output": "**Channel: Operations**\nFrom: [Sender not specified]\nTime: [Time not specified]\nMessage: Supplier quote came back at 12,480 EUR excluding VAT. Approval needed by 03/06/2026.\n\n*Action items*\n• *By 03/06/2026* — Approval needed for the supplier quote of 12,480 EUR excluding VAT (Operations)",
+      "error": null,
+      "checks": [
+        {
+          "kind": "payload",
+          "needle": "12,480 EUR",
+          "pass": true
+        },
+        {
+          "kind": "payload",
+          "needle": "03/06/2026",
+          "pass": true
+        }
+      ],
+      "invented": [],
+      "ok": true
+    },
+    {
+      "id": "amt-03",
+      "family": "amount",
+      "message": "Budget left on the campaign line: 1,235.90. Do not commit beyond that.",
+      "payloads": [
+        "1,235.90"
+      ],
+      "expect_empty": false,
+      "expect_marker": false,
+      "note": "",
+      "output": "*Channel: Operations*\nFrom: [Sender]\nTime: [Time not provided]\nMessage: Budget left on the campaign line: 1,235.90. Do not commit beyond that.",
+      "error": null,
+      "checks": [
+        {
+          "kind": "payload",
+          "needle": "1,235.90",
+          "pass": true
+        }
+      ],
+      "invented": [],
+      "ok": true
+    },
+    {
+      "id": "amt-04",
+      "family": "amount",
+      "message": "Overtime cut-off is 18:45 on Sunday, anything after that goes to next month.",
+      "payloads": [
+        "18:45",
+        "Sunday"
+      ],
+      "expect_empty": false,
+      "expect_marker": false,
+      "note": "",
+      "output": "*Channel: Operations*\nFrom: [Sender not specified]\nTime: [Time not specified]\nMessage: Overtime cut-off is 18:45 on Sunday, anything after that goes to next month.",
+      "error": null,
+      "checks": [
+        {
+          "kind": "payload",
+          "needle": "18:45",
+          "pass": true
+        },
+        {
+          "kind": "payload",
+          "needle": "Sunday",
+          "pass": true
+        }
+      ],
+      "invented": [],
+      "ok": true
+    },
+    {
+      "id": "amt-05",
+      "family": "amount",
+      "message": "Invoice 2026-0841 is overdue by 46 days, amount 8,900.00 USD.",
+      "payloads": [
+        "46 days",
+        "8,900.00 USD"
+      ],
+      "expect_empty": false,
+      "expect_marker": false,
+      "note": "",
+      "output": "*Channel: Operations*\nFrom: [Sender not specified]\nTime: [Time not specified]\nMessage: Invoice 2026-0841 is overdue by 46 days, amount 8,900.00 USD.",
+      "error": null,
+      "checks": [
+        {
+          "kind": "payload",
+          "needle": "46 days",
+          "pass": true
+        },
+        {
+          "kind": "payload",
+          "needle": "8,900.00 USD",
+          "pass": true
+        }
+      ],
+      "invented": [],
+      "ok": true
+    },
+    {
+      "id": "amt-06",
+      "family": "amount",
+      "message": "Deadline for the tender is 2026-06-30 at 12:00 CET, no extension possible.",
+      "payloads": [
+        "2026-06-30",
+        "12:00 CET"
+      ],
+      "expect_empty": false,
+      "expect_marker": false,
+      "note": "",
+      "output": "```\n*Channel: Operations*\nFrom: [Sender not specified]\nTime: [Time not specified]\nMessage: Deadline for the tender is 2026-06-30 at 12:00 CET, no extension possible.\n```\n\n*Action items*\n• *By 2026-06-30 at 12:00 CET* — Submit the tender (Operations)",
+      "error": null,
+      "checks": [
+        {
+          "kind": "payload",
+          "needle": "2026-06-30",
+          "pass": true
+        },
+        {
+          "kind": "payload",
+          "needle": "12:00 CET",
+          "pass": true
+        }
+      ],
+      "invented": [],
+      "ok": true
+    },
+    {
+      "id": "amt-07",
+      "family": "amount",
+      "message": "Reimbursement capped at 65 per night, receipts required.",
+      "payloads": [
+        "65"
+      ],
+      "expect_empty": false,
+      "expect_marker": false,
+      "note": "",
+      "output": "**Channel: Operations**\nFrom: [Sender Unknown]\nTime: [Unknown]\nMessage: Reimbursement capped at 65 per night, receipts required.",
+      "error": null,
+      "checks": [
+        {
+          "kind": "payload",
+          "needle": "65",
+          "pass": true
+        }
+      ],
+      "invented": [],
+      "ok": true
+    },
+    {
+      "id": "amt-08",
+      "family": "amount",
+      "message": "Headcount request approved for 3 roles, starting Q3, total annual cost 214,000.",
+      "payloads": [
+        "3 roles",
+        "214,000"
+      ],
+      "expect_empty": false,
+      "expect_marker": false,
+      "note": "",
+      "output": "The recent messages concern a headcount request approval. No relevant messages.",
+      "error": null,
+      "checks": [
+        {
+          "kind": "payload",
+          "needle": "3 roles",
+          "pass": false
+        },
+        {
+          "kind": "payload",
+          "needle": "214,000",
+          "pass": false
+        }
+      ],
+      "invented": [],
+      "ok": false
+    },
+    {
+      "id": "code-01",
+      "family": "code",
+      "message": "Warehouse door code changed to 4827#. Do not share outside the team.",
+      "payloads": [
+        "4827#"
+      ],
+      "expect_empty": false,
+      "expect_marker": false,
+      "note": "",
+      "output": "**Channel: Operations**\nFrom: [Sender]\nTime: [Time not provided]\nMessage: Warehouse door code changed to 4827#. Do not share outside the team.",
+      "error": null,
+      "checks": [
+        {
+          "kind": "payload",
+          "needle": "4827#",
+          "pass": true
+        }
+      ],
+      "invented": [],
+      "ok": true
+    },
+    {
+      "id": "code-02",
+      "family": "code",
+      "message": "Quote reference for the follow-up call: REF-2026-AX-0093",
+      "payloads": [
+        "REF-2026-AX-0093"
+      ],
+      "expect_empty": false,
+      "expect_marker": false,
+      "note": "",
+      "output": "```\n*Channel: Operations*\nFrom: [Sender]\nTime: [Time not provided]\nMessage: Quote reference for the follow-up call: REF-2026-AX-0093\n```",
+      "error": null,
+      "checks": [
+        {
+          "kind": "payload",
+          "needle": "REF-2026-AX-0093",
+          "pass": true
+        }
+      ],
+      "invented": [],
+      "ok": true
+    },
+    {
+      "id": "code-03",
+      "family": "code",
+      "message": "Meeting passcode is 88f-2QL, the room opens ten minutes before.",
+      "payloads": [
+        "88f-2QL"
+      ],
+      "expect_empty": false,
+      "expect_marker": false,
+      "note": "",
+      "output": "```\n*Channel: Operations*\nFrom: [Sender Unknown]\nTime: [Unknown]\nMessage: Meeting passcode is 88f-2QL, the room opens ten minutes before.\n```",
+      "error": null,
+      "checks": [
+        {
+          "kind": "payload",
+          "needle": "88f-2QL",
+          "pass": true
+        }
+      ],
+      "invented": [],
+      "ok": true
+    },
+    {
+      "id": "code-04",
+      "family": "code",
+      "message": "Use cost centre CC-4471 on every expense line for this project.",
+      "payloads": [
+        "CC-4471"
+      ],
+      "expect_empty": false,
+      "expect_marker": false,
+      "note": "",
+      "output": "**Channel: Operations**\nFrom: [Sender]\nTime: [Time not provided]\nMessage: Use cost centre CC-4471 on every expense line for this project.",
+      "error": null,
+      "checks": [
+        {
+          "kind": "payload",
+          "needle": "CC-4471",
+          "pass": true
+        }
+      ],
+      "invented": [],
+      "ok": true
+    },
+    {
+      "id": "code-05",
+      "family": "code",
+      "message": "Ticket #INC-88214 is now assigned to the platform team.",
+      "payloads": [
+        "#INC-88214"
+      ],
+      "expect_empty": false,
+      "expect_marker": false,
+      "note": "",
+      "output": "The recent messages concern ticket assignments. No relevant messages.",
+      "error": null,
+      "checks": [
+        {
+          "kind": "payload",
+          "needle": "#INC-88214",
+          "pass": false
+        }
+      ],
+      "invented": [],
+      "ok": false
+    },
+    {
+      "id": "code-06",
+      "family": "code",
+      "message": "New badge serial for the contractor: BD-0092-KLM, activate it on arrival.",
+      "payloads": [
+        "BD-0092-KLM"
+      ],
+      "expect_empty": false,
+      "expect_marker": false,
+      "note": "",
+      "output": "**Channel: Operations**\nFrom: [Sender not specified]\nTime: [Time not specified]\nMessage: New badge serial for the contractor: BD-0092-KLM, activate it on arrival.",
+      "error": null,
+      "checks": [
+        {
+          "kind": "payload",
+          "needle": "BD-0092-KLM",
+          "pass": true
+        }
+      ],
+      "invented": [],
+      "ok": true
+    },
+    {
+      "id": "cnt-01",
+      "family": "contact",
+      "message": "Call the duty manager on 05X-1122334 if the alarm triggers overnight.",
+      "payloads": [
+        "05X-1122334"
+      ],
+      "expect_empty": false,
+      "expect_marker": false,
+      "note": "",
+      "output": "**Channel: Operations**\nFrom: [Sender Unknown]\nTime: [Unknown]\nMessage: Call the duty manager on 05X-1122334 if the alarm triggers overnight.",
+      "error": null,
+      "checks": [
+        {
+          "kind": "payload",
+          "needle": "05X-1122334",
+          "pass": true
+        }
+      ],
+      "invented": [],
+      "ok": true
+    },
+    {
+      "id": "cnt-02",
+      "family": "contact",
+      "message": "Send the signed copy to procurement.desk@example.com before end of day.",
+      "payloads": [
+        "procurement.desk@example.com"
+      ],
+      "expect_empty": false,
+      "expect_marker": false,
+      "note": "",
+      "output": "```\n*Channel: Operations*\nFrom: [Sender not specified]\nTime: [Time not specified]\nMessage: Send the signed copy to procurement.desk@example.com before end of day.\n\n*Action items*\n• *Before end of day* — Send the signed copy to procurement.desk@example.com (Operations)\n```",
+      "error": null,
+      "checks": [
+        {
+          "kind": "payload",
+          "needle": "procurement.desk@example.com",
+          "pass": true
+        }
+      ],
+      "invented": [],
+      "ok": true
+    },
+    {
+      "id": "cnt-03",
+      "family": "contact",
+      "message": "Delivery address for the hardware is 14 Herzl Street, Building B, floor 3.",
+      "payloads": [
+        "14 Herzl Street, Building B, floor 3"
+      ],
+      "expect_empty": false,
+      "expect_marker": false,
+      "note": "",
+      "output": "**Channel: Operations**\nFrom: [Sender]\nTime: [Time not provided]\nMessage: Delivery address for the hardware is 14 Herzl Street, Building B, floor 3.",
+      "error": null,
+      "checks": [
+        {
+          "kind": "payload",
+          "needle": "14 Herzl Street, Building B, floor 3",
+          "pass": true
+        }
+      ],
+      "invented": [],
+      "ok": true
+    },
+    {
+      "id": "cnt-04",
+      "family": "contact",
+      "message": "New supplier contact is Dana at +972-54-0000000, she covers the north.",
+      "payloads": [
+        "+972-54-0000000"
+      ],
+      "expect_empty": false,
+      "expect_marker": false,
+      "note": "",
+      "output": "```\n*Channel: Operations*\nFrom: [Sender]\nTime: [HH]h[MM]\nMessage: New supplier contact is Dana at +972-54-0000000, she covers the north.\n```",
+      "error": null,
+      "checks": [
+        {
+          "kind": "payload",
+          "needle": "+972-54-0000000",
+          "pass": true
+        }
+      ],
+      "invented": [],
+      "ok": true
+    },
+    {
+      "id": "cnt-05",
+      "family": "contact",
+      "message": "Escalations go to ops-oncall@example.com, not to the general inbox.",
+      "payloads": [
+        "ops-oncall@example.com"
+      ],
+      "expect_empty": false,
+      "expect_marker": false,
+      "note": "",
+      "output": "**Channel: Operations**\nFrom: [Sender]\nTime: [Time not provided]\nMessage: Escalations go to ops-oncall@example.com, not to the general inbox.",
+      "error": null,
+      "checks": [
+        {
+          "kind": "payload",
+          "needle": "ops-oncall@example.com",
+          "pass": true
+        }
+      ],
+      "invented": [],
+      "ok": true
+    },
+    {
+      "id": "cnt-06",
+      "family": "contact",
+      "message": "Site visit meets at the gate on Ha'Arba 21, entrance C, at 08:30.",
+      "payloads": [
+        "Ha'Arba 21, entrance C",
+        "08:30"
+      ],
+      "expect_empty": false,
+      "expect_marker": false,
+      "note": "",
+      "output": "**Channel: Operations**\nFrom: [Sender]\nTime: [Time not provided]\nMessage: Site visit meets at the gate on Ha'Arba 21, entrance C, at 08:30.",
+      "error": null,
+      "checks": [
+        {
+          "kind": "payload",
+          "needle": "Ha'Arba 21, entrance C",
+          "pass": true
+        },
+        {
+          "kind": "payload",
+          "needle": "08:30",
+          "pass": true
+        }
+      ],
+      "invented": [],
+      "ok": true
+    },
+    {
+      "id": "noise-01",
+      "family": "noise",
+      "message": "Good morning everyone! Hope you had a nice weekend.",
+      "payloads": [],
+      "expect_empty": true,
+      "expect_marker": false,
+      "note": "greeting only",
+      "output": "The recent messages concern greetings and weekend well-wishes. No relevant messages.",
+      "error": null,
+      "checks": [
+        {
+          "kind": "noise_rejection",
+          "needle": "no digest block",
+          "pass": true
+        },
+        {
+          "kind": "empty_case_explained",
+          "needle": "No relevant messages",
+          "pass": true
+        }
+      ],
+      "invented": [],
+      "ok": true
+    },
+    {
+      "id": "noise-02",
+      "family": "noise",
+      "message": "Thanks a lot! Really appreciated. Thanks again everyone.",
+      "payloads": [],
+      "expect_empty": true,
+      "expect_marker": false,
+      "note": "thanks only",
+      "output": "The recent messages concern expressions of gratitude. No relevant messages.",
+      "error": null,
+      "checks": [
+        {
+          "kind": "noise_rejection",
+          "needle": "no digest block",
+          "pass": true
+        },
+        {
+          "kind": "empty_case_explained",
+          "needle": "No relevant messages",
+          "pass": true
+        }
+      ],
+      "invented": [],
+      "ok": true
+    },
+    {
+      "id": "noise-03",
+      "family": "noise",
+      "message": "Anyone know a good place for lunch near the office? The place we tried last week was too slow.",
+      "payloads": [],
+      "expect_empty": true,
+      "expect_marker": false,
+      "note": "off-topic chatter",
+      "output": "The recent messages concern lunch recommendations near the office. No relevant messages.",
+      "error": null,
+      "checks": [
+        {
+          "kind": "noise_rejection",
+          "needle": "no digest block",
+          "pass": true
+        },
+        {
+          "kind": "empty_case_explained",
+          "needle": "No relevant messages",
+          "pass": true
+        }
+      ],
+      "invented": [],
+      "ok": true
+    },
+    {
+      "id": "noise-04",
+      "family": "noise",
+      "message": "Haha that photo is great. Who took it?",
+      "payloads": [],
+      "expect_empty": true,
+      "expect_marker": false,
+      "note": "social",
+      "output": "The recent messages concern a photo shared in the channel. No relevant messages.",
+      "error": null,
+      "checks": [
+        {
+          "kind": "noise_rejection",
+          "needle": "no digest block",
+          "pass": true
+        },
+        {
+          "kind": "empty_case_explained",
+          "needle": "No relevant messages",
+          "pass": true
+        }
+      ],
+      "invented": [],
+      "ok": true
+    },
+    {
+      "id": "noise-05",
+      "family": "noise",
+      "message": "Congratulations on the new arrival! Wishing you all the best.",
+      "payloads": [],
+      "expect_empty": true,
+      "expect_marker": false,
+      "note": "social",
+      "output": "The recent messages concern congratulations on a new arrival. No relevant messages.",
+      "error": null,
+      "checks": [
+        {
+          "kind": "noise_rejection",
+          "needle": "no digest block",
+          "pass": true
+        },
+        {
+          "kind": "empty_case_explained",
+          "needle": "No relevant messages",
+          "pass": true
+        }
+      ],
+      "invented": [],
+      "ok": true
+    },
+    {
+      "id": "amb-01",
+      "family": "ambiguity",
+      "message": "Meeting moved to next Tuesday I think, someone should confirm with the client.",
+      "payloads": [],
+      "expect_empty": false,
+      "expect_marker": true,
+      "note": "uncertain date, must not be resolved",
+      "output": "The recent messages concern a meeting rescheduling. No relevant messages.",
+      "error": null,
+      "checks": [
+        {
+          "kind": "ambiguity_marked",
+          "needle": "(to be confirmed)",
+          "pass": false
+        }
+      ],
+      "invented": [],
+      "ok": false
+    },
+    {
+      "id": "amb-02",
+      "family": "ambiguity",
+      "message": "The amount is around eight thousand something, I do not have the invoice in front of me.",
+      "payloads": [],
+      "expect_empty": false,
+      "expect_marker": true,
+      "note": "approximate amount, must not be turned into a figure",
+      "output": "The recent messages concern an unspecified amount related to an invoice. No relevant messages.",
+      "error": null,
+      "checks": [
+        {
+          "kind": "ambiguity_marked",
+          "needle": "(to be confirmed)",
+          "pass": false
+        }
+      ],
+      "invented": [],
+      "ok": false
+    },
+    {
+      "id": "amb-03",
+      "family": "ambiguity",
+      "message": "Send it to the usual address, you know the one.",
+      "payloads": [],
+      "expect_empty": false,
+      "expect_marker": true,
+      "note": "no address given, must not be invented",
+      "output": "The recent messages concern sending something to a usual address. No relevant messages.",
+      "error": null,
+      "checks": [
+        {
+          "kind": "ambiguity_marked",
+          "needle": "(to be confirmed)",
+          "pass": false
+        }
+      ],
+      "invented": [],
+      "ok": false
+    },
+    {
+      "id": "amb-04",
+      "family": "ambiguity",
+      "message": "Deadline is either the 12th or the 15th, the email was not clear.",
+      "payloads": [],
+      "expect_empty": false,
+      "expect_marker": true,
+      "note": "two candidate dates",
+      "output": "The recent message concerns a deadline that is unclear, either the 12th or the 15th. No relevant messages.",
+      "error": null,
+      "checks": [
+        {
+          "kind": "ambiguity_marked",
+          "needle": "(to be confirmed)",
+          "pass": false
+        }
+      ],
+      "invented": [],
+      "ok": false
+    },
+    {
+      "id": "amb-05",
+      "family": "ambiguity",
+      "message": "Someone from finance will call you, I forget who exactly.",
+      "payloads": [],
+      "expect_empty": false,
+      "expect_marker": true,
+      "note": "unnamed person, must stay unnamed",
+      "output": "The recent messages concern a call from finance. No relevant messages.",
+      "error": null,
+      "checks": [
+        {
+          "kind": "ambiguity_marked",
+          "needle": "(to be confirmed)",
+          "pass": false
+        }
+      ],
+      "invented": [],
+      "ok": false
+    }
+  ]
+}
