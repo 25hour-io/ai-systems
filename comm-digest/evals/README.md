@@ -7,7 +7,7 @@ link has destroyed the message.
 That instruction is a **prompt-level rule**. Nothing downstream checked that the model followed it.
 This harness checks it — and the numbers changed what the repository claims.
 
-**Run date:** 2026-08-26 · **Model:** `gpt-4o`, temperature 0 · **Cases:** 40
+**Run date:** 2026-08-26 · **Model:** `gpt-4o`, temperature 0 · **Cases:** 40 · **v2 deployed** the same day
 
 ---
 
@@ -106,9 +106,14 @@ relevance judgement more context. A message judged in isolation may be treated m
 **Synthetic cases.** They cover the payload families deliberately and evenly, which real traffic
 does not. This measures the guardrail, not the traffic.
 
-## Not yet deployed
+## Deployment status
 
-Prompt v2 and `validate.mjs` live here and are measured here. Neither is wired into the running
-n8n workflow yet. Until they are, the deployed system behaves like **v1**.
+**Prompt v2 is deployed.** The retention rule went into the running n8n workflow on 2026-08-26 —
+measured first, shipped second. The live prompt is French and carries the real deployment context;
+what was ported is the rule, not the published English file.
+
+`validate.mjs` is **not** wired in. Until it is, a lost payload is still delivered rather than
+caught, and structured payloads stay `Constrained` in production even though the mechanism to make
+them `Verified` exists here.
 
 [`system-prompt.v1.md`](./system-prompt.v1.md) is kept as the measured baseline.

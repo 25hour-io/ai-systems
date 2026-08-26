@@ -64,11 +64,14 @@ model discarded whole messages as irrelevant, including an assigned ticket numbe
 and an escalation address. A retention rule lifted that to **92.1 %**, and no further prompt
 iteration is expected to reach 100 %.
 
+The retention rule is **deployed** — measured first, shipped second.
+
 **That ceiling is the point.** A prompt rule improves behaviour; it does not guarantee it. Which
 is why [`validate.mjs`](./evals/validate.mjs) extracts payloads from the input and checks them
-against the output: structured payloads are now `Verified`, payloads written in prose stay
-`Constrained`. Full numbers, limits and the untested edges are in
-[`evals/README.md`](./evals/README.md).
+against the output. It is written and measured, and **not yet wired into the running workflow**:
+so in production this guardrail is still `Constrained`, and the mechanism that would make
+structured payloads `Verified` is sitting one integration away. Full numbers, limits and
+deployment status are in [`evals/README.md`](./evals/README.md).
 
 **Never invent.** Ambiguous content is translated with a "to be confirmed" marker. Missing
 information stays missing. Same level: `Constrained`.
