@@ -60,7 +60,10 @@ described as a guarantee is the first thing a technical reader will test.
 
 ---
 
-## Why it is a prototype
+## Why it is a `PROTOTYPE`, and not more
+
+The retrieval and voice layers work end to end. Nothing is deployed, nothing runs unattended, and
+no cost figure exists — there is no traffic to measure.
 
 The retrieval and voice layers work end to end. Turning it into a product means the operational
 half: corpus ingestion for non-technical owners, freshness and re-indexing, and measuring answer

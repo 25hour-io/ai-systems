@@ -1,13 +1,15 @@
 # AI systems in production
 
-Reference implementations built at [25hour](https://25hour.io), an AI automation consultancy.
-Each one solves a business problem, runs unattended, and is proven on a demanding real-world
-deployment.
+Production AI systems, prototypes and enabling components built at
+[25hour](https://25hour.io), an AI automation consultancy.
 
-Every entry below states what the system does, how it is put together, and what it costs to run.
+Every entry states the business problem it solves, the architecture decisions that mattered, and
+the operational evidence behind it. Each one carries a status line: what is live and unattended,
+what is a prototype, what is a component other people install.
 
-The cost line is the part most portfolios leave out. It is the part that decides whether an AI
-feature survives contact with a budget.
+**Where cost materially shaped the design, the economics are shown in full** — measured per
+request or per source, with the decision that followed. That is the part most portfolios leave
+out, and the part that decides whether an AI feature survives its first invoice.
 
 ---
 
@@ -19,8 +21,8 @@ feature survives contact with a budget.
 | [**Comm Digest**](./comm-digest) | Always-on agent that filters, translates and extracts action items from team channels | Live since May 2026 |
 | [**Hubert**](./hubert) | Orchestration layer over 10 specialised agents across business tools | Live, 10 agents deployed |
 | [**Role Matching Pipeline**](./role-matching) | Continuous role sourcing and candidate-role scoring under a hard cost ceiling | Live, twice daily |
-| [**Voice Knowledge Agent**](./voice-knowledge-agent) | Real-time voice agent answering from a source corpus, grounded | Working prototype |
-| [**n8n-nodes-sse-client**](./sse-client) | Open-source n8n node for Server-Sent Events | [Published on npm](https://www.npmjs.com/package/n8n-nodes-sse-client) |
+| [**Voice Knowledge Agent**](./voice-knowledge-agent) | Real-time voice agent answering from a source corpus, grounded | `PROTOTYPE` — works end to end, not deployed |
+| [**n8n-nodes-sse-client**](./sse-client) | Enabling component: open-source n8n node for Server-Sent Events | [Published on npm](https://www.npmjs.com/package/n8n-nodes-sse-client) — ~800 installs |
 
 ---
 
@@ -38,13 +40,17 @@ the expertise.
 
 ---
 
-## Four things these systems have in common
+## Five things these systems have in common
 
 **Cost governance is a design input.** Every system splits work across models by the judgment each
-task requires. Cheap models carry volume; expensive models are called once, where the decision
-lives. The role matching pipeline runs on a hard 29 $ ceiling and reports its unit economics per
-source. Hubert's per-request cost was measured at 0.25 $ before it was redesigned around that
-number.
+task requires: cheap models carry volume, expensive models are called once, where the decision
+lives.
+
+Two of them publish the arithmetic, because cost is what drove their architecture. The role
+matching pipeline runs under a hard 29 $ ceiling and reports its unit economics per source —
+three sources were cut on that table. Hubert's per-request cost was `MEASURED` at 0.25 $ and the
+architecture was redesigned around that number. The others state the model split without a figure
+attached, which is all the evidence available for them.
 
 **The model is never trusted to be right — and the guardrails are not all equally strong.** Every
 system here controls invented output, but through mechanisms of different strength. Calling all of
@@ -68,8 +74,10 @@ The weakest of the three is measured rather than asserted: see the
 anything are why the pipeline now applies deterministic validation: it reads its rows back and
 compares them field by field.
 
-**Everything runs unattended.** Scheduled, idempotent, and safe to restart. Processed identifiers
-are persisted so a retry never duplicates work, and each pipeline stage isolates its own failures.
+**What is deployed runs unattended.** Scheduled, idempotent, and safe to restart. Processed
+identifiers are persisted so a retry never duplicates work, and each pipeline stage isolates its
+own failures — with something downstream that still knows a stage failed, which is the part that
+is easy to get wrong.
 
 **Evidence labels.** Every figure in this repository carries its status: `MEASURED` on a running
 system, `ESTIMATED` from a model, `DESIGN TARGET` for an architecture not yet in production,
