@@ -5,7 +5,7 @@ it, tags it, links it to related entries, and makes the whole corpus searchable 
 
 **Live at [memo.25hour.io](https://memo.25hour.io)** — web and native Android from one codebase.
 
-10,500 lines of TypeScript · 97 commits · 19 API routes · `MEASURED`
+10,500 lines of TypeScript · 101 commits · 20 API routes · `MEASURED`
 
 ---
 
@@ -44,7 +44,11 @@ create memo
 
 Voice memos hold at step 1 until transcription lands, then rejoin the same path.
 
-Source: [`code/pipeline.ts`](./code/pipeline.ts)
+A memo that does not reach step 5 is picked up again by a cron running every fifteen minutes,
+bounded at five attempts per memo.
+
+Source: [`code/pipeline.ts`](./code/pipeline.ts) ·
+[`code/reprocess-route.ts`](./code/reprocess-route.ts)
 
 ---
 
@@ -75,6 +79,27 @@ an original design: the flag used to be written unconditionally, so a memo whose
 failed was marked processed and quietly stopped being a candidate for any retry. An external
 review of this published file caught it. Failure isolation per step is only safe when something
 downstream still knows a step failed.
+
+**A flag nobody reads back is only a tidier way to fail.** Writing `ai_processed` honestly is
+worth something only if a memo left at `false` gets picked up again — and nothing picked it up.
+Three cron jobs ran against this database and none of them looked at the flag; the client-side
+poller gave up after fifteen attempts and re-queued nothing. Twenty-one memos had been sitting
+unprocessed, the oldest untouched for three months. The retry is now a cron of its own, and the
+two decisions inside it were paid for in measurement rather than settled in design:
+
+*It answers before it works.* The scheduler is `pg_cron` reaching the route through `pg_net`,
+whose `net.http_get` closes the connection at 30 seconds. A route that does the work before
+responding is killed mid-pipeline on every cycle — the first live run burned two attempt counters
+and finished zero memos. So the batch is claimed, the response goes out, and the work runs in
+`after()`. The response reports what was picked up, never what succeeded; the verdict is read from
+the database.
+
+*A counter is not a lock.* Incrementing an attempt counter bounds how many times a memo can be
+tried, but it excludes nothing: while the count sits under the maximum, a concurrent cycle selects
+the same rows again. Four consecutive manual cycles returned the same memo id, which on this
+pipeline means paying twice for the same crawl and the same two model calls. A claim timestamp now
+sits beside the counter. One bounds the total cost, the other enforces mutual exclusion — they are
+not the same guarantee, and neither substitutes for the other.
 
 ---
 
