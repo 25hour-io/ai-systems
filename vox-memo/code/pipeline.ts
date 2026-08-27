@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { enrichMemo } from "./enrich";
+import { enrichMemo, CLEANING_MAX_CHARS } from "./enrich";
 import { generateEmbedding } from "./embed";
 import { crawlUrl, summarizeCrawledContent } from "./crawl";
 import { analyzeImage } from "./analyze-image";
@@ -136,7 +136,13 @@ export async function processMemo(
     if (enrichment.cleaned_text !== null) {
       content = enrichment.cleaned_text;
       updatePayload.content_text = enrichment.cleaned_text;
-    } else if (enrichment.reminder_at || enrichment.priority) {
+    } else if (
+      (enrichment.reminder_at || enrichment.priority) &&
+      content.length <= CLEANING_MAX_CHARS
+    ) {
+      // Above that size the text is deliberately kept verbatim, so an uncleaned
+      // body is the expected outcome rather than a missed cleaning. Warning on it
+      // anyway would train the log to be ignored.
       console.warn("Pipeline: AI returned reminder_at/priority but cleaned_text is null — text not cleaned", memoId);
     }
 
