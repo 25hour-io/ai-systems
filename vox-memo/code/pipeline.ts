@@ -153,10 +153,14 @@ export async function processMemo(
       updatePayload.priority = enrichment.priority;
     }
 
-    await supabase
+    // supabase-js resolves with { error } instead of throwing: an update refused by the
+    // database would otherwise slip past the catch below and count as a success.
+    const { error: enrichWriteError } = await supabase
       .from("memos")
       .update(updatePayload)
       .eq("id", memoId);
+
+    if (enrichWriteError) throw enrichWriteError;
 
     if (Array.isArray(enrichment.tags)) currentTags = enrichment.tags;
     enrichmentOk = true;
@@ -171,10 +175,12 @@ export async function processMemo(
 
     const embedding = await generateEmbedding(embeddingText);
 
-    await supabase
+    const { error: embeddingWriteError } = await supabase
       .from("memos")
       .update({ embedding: JSON.stringify(embedding) })
       .eq("id", memoId);
+
+    if (embeddingWriteError) throw embeddingWriteError;
 
     embeddingOk = true;
   } catch (err) {
