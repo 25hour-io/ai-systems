@@ -50,9 +50,9 @@ this prototype and a product.
 expanded by loosening the constraint.
 
 Three systems attack the same problem, and it is worth being precise about how each one holds.
-The [role matching pipeline](../role-matching) enforces a `Structural` fact ceiling on generated
+The [role matching pipeline](../role-matching-pipeline) enforces a `Structural` fact ceiling on generated
 documents: removal cannot fabricate, so nothing has to be checked. This agent and the
-[comm digest](../comm-digest) both sit at `Constrained`: the architecture narrows what the model
+[channel digest agent](../channel-digest-agent) both sit at `Constrained`: the architecture narrows what the model
 sees, and a prompt-level rule asks it to stay inside.
 
 Same principle, three different strengths. Saying so is the point — an unmeasured constraint
@@ -65,6 +65,6 @@ described as a guarantee is the first thing a technical reader will test.
 The retrieval and voice layers work end to end. Nothing is deployed, nothing runs unattended, and
 no cost figure exists — there is no traffic to measure.
 
-The retrieval and voice layers work end to end. Turning it into a product means the operational
-half: corpus ingestion for non-technical owners, freshness and re-indexing, and measuring answer
-quality against a question set rather than by impression.
+Turning it into a product means the operational half: corpus ingestion for non-technical owners,
+freshness and re-indexing, and measuring answer quality against a question set rather than by
+impression.
