@@ -10,12 +10,12 @@ and returns a structured digest ending in explicit action items.
 
 ## The problem
 
-A busy group channel is unreadable. Hundreds of messages a day, most of them social, a handful
-carrying a deadline, a payment, a link, or a required action. Reading everything costs an hour a
-day. Skipping it costs a missed deadline.
+A busy group channel is unreadable. A hundred messages a day across half a dozen channels, most
+of them social, a handful carrying a deadline, a payment, a link, or a required action. Reading
+everything costs an hour a day. Skipping it costs a missed deadline.
 
 The deployed instance runs against high-volume operational channels written in Hebrew, for a
-reader who does not read Hebrew. That is a deliberately hard case: heavy traffic, a foreign
+reader who does not read Hebrew. That is a deliberately hard case: steady traffic, a foreign
 language, right-to-left script, mixed media, and real consequences when something slips through.
 
 The same agent fits any team channel — Slack, Telegram, Teams. The input connector changes; the
@@ -29,42 +29,47 @@ The deployed graph, node for node. Names are the real node names.
 
 ```mermaid
 flowchart TD
-    T([Schedule · every minute]) --> PG[Prepare Groups]
-    PG --> FGN[Fetch Group Name]
-    FGN --> BGL[Build Group List]
-    BGL --> FM[Fetch Messages]
-    FM --> PS[Parse and Split]
+    T([Schedule · every minute]) --> COL
+
+    subgraph COL["resolve channels"]
+      direction LR
+      PG[Prepare Groups] --> FGN[Fetch Group Name] --> BGL[Build Group List] --> FM[Fetch Messages]
+    end
+
+    COL --> PS[Parse and Split]
     PS --> HM{Has Messages}
     HM -->|no| STOP([nothing new · exit])
     HM -->|yes| HI{Has Images}
 
+    HI -->|yes| IMG
+    subgraph IMG["images"]
+      direction LR
+      EI[Expand Images] --> GB[Get Base64] --> PB[Prepare Binary] --> AIM["Analyze Image<br/>Haiku 4.5 vision<br/>max 300 tok"] --> BIT[Build Image Text] --> AFI[After Images]
+    end
+
     HI -->|no| HD{Has Documents}
-    HI -->|yes| EI[Expand Images]
-    EI --> GB[Get Base64]
-    GB --> PB[Prepare Binary]
-    PB --> AIM["Analyze Image<br/>Haiku 4.5 vision · max 300 tok"]
-    AIM --> BIT[Build Image Text]
-    BIT --> AFI[After Images]
-    AFI --> HD
+    IMG --> HD
+
+    HD -->|yes| DOC
+    subgraph DOC["documents"]
+      direction LR
+      ED[Expand Documents] --> GDB[Get Doc Base64] --> PDB[Prepare Doc Binary] --> ISP{Is PDF}
+      ISP -->|yes| AD["Analyze Document<br/>Haiku 4.5<br/>max 500 tok"] --> BDT[Build Doc Text PDF] --> AFD[After Docs]
+      ISP -->|no| AFD
+    end
 
     HD -->|no| FMT[Format Messages]
-    HD -->|yes| ED[Expand Documents]
-    ED --> GDB[Get Doc Base64]
-    GDB --> PDB[Prepare Doc Binary]
-    PDB --> ISP{Is PDF}
-    ISP -->|yes| AD["Analyze Document<br/>Haiku 4.5 · max 500 tok"]
-    ISP -->|no| AFD[After Docs]
-    AD --> BDT[Build Doc Text PDF]
-    BDT --> AFD
-    AFD --> FMT
+    DOC --> FMT
 
     FMT --> SUM["Summarize Messages<br/>Sonnet 4.5 · filter, translate, extract actions"]
-    SUM --> SEND[Send Digest]
-    SEND --> CPI[Commit Processed IDs]
-    CPI --> CIB[Collect Image Binaries]
-    CPI --> CDB[Collect Document Binaries]
-    CIB --> FWI[Forward Image]
-    CDB --> FWD[Forward Document]
+    SUM --> SEND[Send Digest] --> CPI[Commit Processed IDs]
+
+    subgraph MEDIA["forward the attachments"]
+      direction LR
+      CIB[Collect Image Binaries] --> FWI[Forward Image]
+      CDB[Collect Document Binaries] --> FWDOC[Forward Document]
+    end
+    CPI --> MEDIA
 ```
 
 Three things in that graph are worth pausing on, and none of them are the model calls.
