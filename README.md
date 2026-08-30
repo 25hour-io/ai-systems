@@ -1,7 +1,8 @@
 # AI systems in production
 
-Production AI systems, prototypes and enabling components built at
-[25hour](https://25hour.io), an AI automation consultancy.
+A selection of the production AI systems, prototypes and enabling components built at
+[25hour](https://25hour.io), an AI automation consultancy. Not a complete inventory: what is
+published here is what can be shown, and what carries a decision worth reading.
 
 Every entry states the business problem it solves, the architecture decisions that mattered, and
 the operational evidence behind it. Each one carries a status line: what is live and unattended,
@@ -13,7 +14,7 @@ out, and the part that decides whether an AI feature survives its first invoice.
 
 ---
 
-## The systems
+## A few of the systems
 
 | System | What it does | Status |
 |---|---|---|
