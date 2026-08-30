@@ -51,10 +51,11 @@ rests on a measurement instead of an opinion.
 
 ## Deterministic validation
 
-[`validate.mjs`](./validate.mjs) is the mechanism that closes what the prompt cannot. It extracts
-payloads from the **input** with regular expressions, checks each against the **output**, and
-returns what went missing. It cannot repair a dropped block. It makes the drop visible, which is the
-difference between a rule the model is asked to follow and a check the pipeline performs.
+[`validate.mjs`](./validate.mjs) is the mechanism that closes what the prompt cannot, and it runs in
+the pipeline. It extracts payloads from the **input** with regular expressions, checks each against
+the **output**, and returns what went missing. It cannot repair a dropped block. It makes the drop
+visible and stops the digest, which is the difference between a rule the model is asked to follow
+and a check the pipeline performs.
 
 | Measure | Result |
 |---|---|
@@ -112,8 +113,13 @@ does not. This measures the guardrail, not the traffic.
 measured first, shipped second. The live prompt is French and carries the real deployment context.
 What was ported is the rule, not the published English file.
 
-`validate.mjs` is **not** wired in. Until it is, a lost payload is still delivered rather than
-caught, and structured payloads stay `Constrained` in production even though the mechanism to make
-them `Verified` exists here.
+**`validate.mjs` is wired in.** It runs on every digest ahead of delivery: one that lost a
+structured payload is blocked instead of sent. That is what makes structured payloads `Verified` in
+production rather than `Constrained` — the prompt asks, and the pipeline checks.
+
+The grade still splits, and the 18.4 % above is why. Payloads written in prose are not extracted, so
+they are not checked, so they stay `Constrained`. No regular expression closes that gap. What would
+is a second extraction pass over the input — and it would have to be measured before it could be
+claimed.
 
 [`system-prompt.v1.md`](./system-prompt.v1.md) is kept as the measured baseline.
