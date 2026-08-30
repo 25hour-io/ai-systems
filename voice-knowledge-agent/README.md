@@ -1,22 +1,31 @@
 # Voice Knowledge Agent
 
-A real-time voice agent that answers spoken questions from a source corpus. You talk, it
+A real-time voice agent that answers spoken questions from a company's own corpus. You talk, it
 retrieves, it answers, and it answers only from what it retrieved.
 
 **`PROTOTYPE`.** Real-time voice over WebSocket, retrieval-augmented generation over pgvector.
 
 ---
 
-## What it is for
+## Who it was built for
 
-A knowledge base nobody queries is a cost centre. Search boxes go unused because typing a precise
-query is work, and because the answer arrives as ten documents to read.
+A company selling technical systems through a mobile sales force. Its reps spend their day driving
+between customer sites, and the questions that decide a sale arrive between two appointments: which
+model fits this configuration, what the specification actually says, what is in stock right now.
 
-Voice removes both frictions. Ask the question the way you would ask a colleague, get the answer
-spoken back, at any hour.
+Today those questions cost a phone call to someone at head office, or they wait until evening. Both
+answers arrive after the conversation that needed them.
 
-Direct applications: front-line support, employee onboarding, product documentation, field staff
-with their hands busy.
+**The constraint is the steering wheel, and it is what makes voice necessary rather than pleasant.**
+A rep at the wheel cannot read a specification sheet, cannot type a precise search query, and cannot
+skim ten results to find the paragraph that matters. Every interface assumption behind a normal
+knowledge base fails in a moving vehicle. Spoken question, spoken answer, hands and eyes on the
+road: that is not a nicer front end, it is the only usable one.
+
+The full system answers from two sources: the product documentation, and live stock levels. **This
+folder is a zoom on the documentation half** — the corpus, its indexing, and the retrieval that
+keeps answers inside it. Stock is a different problem with a different failure mode: it is a live
+query against a system of record, where the risk is staleness rather than invention.
 
 ## Stack
 
@@ -46,8 +55,21 @@ mechanically forces the answer to stay inside what came back. Groundedness here 
 prompt-level rule, and measuring it against a labelled question set is exactly what stands between
 this prototype and a product.
 
-**The corpus is the boundary.** Coverage is expanded by indexing more sources. It is never
-expanded by loosening the constraint.
+**The agent has no access to the internet, and that is a guardrail rather than a limitation.** It
+cannot search the web, so it cannot reach a competitor's specification sheet, an outdated PDF of a
+product that was revised two years ago, or a forum thread stating something plausible and wrong. In
+this deployment the difference is commercial: a rep who repeats a figure to a customer has committed
+the company to it, and a figure that came from the open web is one nobody can stand behind.
+
+Cutting the network narrows where a wrong answer can come from — it does not make the remaining
+answers true. The model still holds its training weights, and nothing mechanically stops it from
+composing a plausible sentence out of them. What the isolation buys is a corpus that is auditable:
+when an answer is wrong, the document that made it wrong is in the index and can be fixed. A wrong
+answer sourced from the open web cannot be traced, cannot be corrected, and will come back.
+
+**The corpus is the boundary.** Coverage is expanded by indexing more sources. It is never expanded
+by loosening the constraint — and with no network to fall back on, that is the only way it can be
+expanded at all.
 
 Three systems attack the same problem, and it is worth being precise about how each one holds.
 The [role matching pipeline](../role-matching-pipeline) enforces a `Structural` fact ceiling on generated
@@ -128,3 +150,10 @@ has been superseded, and — the one that actually separates this from a product
 quality against a labelled question set instead of by impression. The
 [channel digest agent](../channel-digest-agent/evals) shows what that measurement looks like when it
 is done. Until it is done here, the grounding claim on this page stays `Constrained`.
+
+Freshness is the one that carries the most weight in this deployment, and it follows directly from
+cutting the network. An isolated agent is exactly as current as its last upload: a specification
+revised at head office is wrong in the field until somebody re-indexes it, and nothing in the
+system knows that. The corpus being the only source is what makes the answers accountable, and it
+is also what makes the upload discipline a production requirement rather than an administrative
+one.
