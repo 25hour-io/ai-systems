@@ -121,12 +121,22 @@ mechanism.
 
 ---
 
-## How the model spend is shaped
+## What it costs to run
 
-No per-request figure is published for this system. The traffic is one user's, so any number here
-would describe a sample of one rather than an operating cost.
+The unit is one memo, because that is what the pipeline is billed by.
 
-What is decided is the split. Haiku carries enrichment and vision, which is the high-volume work.
-Embeddings run on the small OpenAI model. The expensive reasoning models appear nowhere in the hot
-path, because nothing in this pipeline needs them — and a pipeline that fires on every capture is
-exactly where an unnecessary large-model call compounds.
+A typed memo makes one Haiku call and one embedding call. Enrichment carries roughly 2,000 input
+tokens — the memo plus a structured extraction prompt — and returns about 400, which is
+**~0.004 $ at Haiku 4.5 published prices**. The embedding, capped at 8,000 characters on
+`text-embedding-3-small`, adds **~0.00004 $**: a hundredth of the enrichment call, which is why
+nothing was optimised there. At ~62 memos a month that is **a quarter of a dollar**. A spoken memo
+adds transcription, billed per minute of audio; a memo carrying an image adds one Haiku vision call.
+`ESTIMATED`, computed from the pipeline's own token volumes at published prices.
+
+**The model split is what holds that number, and the number is not the point — the ratio is.**
+Enrichment fires on every single capture, so it is exactly the call that must not be expensive. The
+same 2,000-in / 400-out extraction on an Opus-tier model at 5 $ / 25 $ per million would cost
+**~0.02 $ per memo**, five times the bill for a fixed extraction task that needs no reasoning model.
+At this volume nobody would notice either figure. At a team's volume, one unnecessary large-model
+call in a path that fires on every capture *is* the bill — which is why the expensive models appear
+nowhere in the hot path.
