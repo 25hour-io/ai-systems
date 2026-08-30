@@ -18,22 +18,25 @@ the agent that owns that surface and answers. It runs internally under the name 
 
 ## The cost problem this system is about
 
+It starts as an unremarkable invoice and turns into a whodunnit.
+
 The first architecture was one agent holding every capability: 14 MCP servers, roughly 140 tool
 definitions, about 57,000 input tokens on every single request.
 
 **`MEASURED`: 0.25 $ per request.** Including "what's on my calendar today?".
 
-The diagnosis is the interesting part. Around **70 % of that cost was tool definitions** — the
-full catalogue shipped on every call, whether or not a single one of those tools was used. The
-assistant was paying to describe capabilities it had no intention of reaching for.
+The obvious suspect is the model calls. The obvious suspect is innocent. Around **70 % of that cost
+was tool definitions** — the full catalogue travelling inside the context window on every call,
+whether or not a single one of those tools was used. The assistant was paying to describe
+capabilities it had no intention of reaching for.
 
 At 50 to 100 interactions a day, an assistant on that architecture costs more per month than the
 work it saves.
 
 ## The redesign
 
-Split the monolith into a thin router plus callable sub-agents. Only the relevant sub-agent's
-tools load per query.
+Split the monolith into a thin router plus callable sub-agents. Only the relevant sub-agent's tools
+load per query.
 
 Two effects follow:
 
@@ -42,10 +45,10 @@ Two effects follow:
 - **Model routing becomes per-agent.** A small model routes and handles simple operations; a
   larger one is reserved for work that needs it, such as drafting mail.
 
-A third effect is structural: the workflow engine comes out of the middle as orchestration
+A third effect is structural. The workflow engine comes out of the middle as orchestration
 middleware, which removes a hop and a moving part.
 
-**Status of the numbers:** the 0.25 $ figure is `MEASURED` on the running system. The ~0.006 $
+**Status of the numbers.** The 0.25 $ figure is `MEASURED` on the running system. The ~0.006 $
 figure is a `DESIGN TARGET` for the callable-agent architecture, not an observed result. The
 sub-agent pattern itself was already validated in production on a master agent running since 2025.
 
@@ -54,7 +57,7 @@ sub-agent pattern itself was already validated in production on a master agent r
 ## The chat gateway
 
 The routing layer answers through chat, and the gateway in front of it is its own piece of
-engineering: it accepts text, voice and files from more than one client, holds a conversation
+engineering. It accepts text, voice and files from more than one client, holds a conversation
 across turns, and streams the agent's answer back.
 
 ```mermaid
@@ -95,32 +98,35 @@ flowchart TD
     TTS --> SAF[Send Audio File]
 ```
 
-**The client is interchangeable, and that is the point of the first node.** Two entry points feed
+Five decisions in that graph are worth reading, and they are the reason it is a gateway rather than
+a bot.
+
+**1. The client is interchangeable, and that is the point of the first node.** Two entry points feed
 the same graph, and `Extract Input` normalises both into one shape — chat id, message, input type,
 file id — before anything downstream runs. Every node after it references the normalised fields,
 never a trigger. Adding a third client is one branch in one node, not a second copy of the
-workflow. That property is what makes this a gateway rather than a bot.
+workflow.
 
-**A session is a cost decision with a fifteen-minute clock.** Sessions are keyed by chat id and
+**2. A session is a cost decision with a fifteen-minute clock.** Sessions are keyed by chat id and
 reused while the last activity is under fifteen minutes; past that, a new one is created and the
 stale row deleted. Reusing forever means an ever-growing context replayed on every turn. Never
 reusing means the assistant forgets the previous sentence. The clock is where those two failures
 meet, and it is a parameter rather than a principle — it should move when measured traffic says so.
 
-**The reply is streamed, and that is why the [SSE node](../n8n-sse-node) exists.** A managed agent
-answers over Server-Sent Events, and it may run for minutes: it calls tools, waits on APIs, thinks.
-The workflow has to open that stream mid-run, hold it, and close it on the right event — here,
-`session.status_(idle|terminated)`, with a five-minute ceiling. n8n shipped no way to do that, so
-the node was written and published. The component in this repository with the most external users
-was built to unblock the system in this one.
+**3. The reply is streamed, and that is why the [SSE node](../n8n-sse-node) exists.** A managed
+agent answers over Server-Sent Events, and it may run for minutes: it calls tools, waits on APIs,
+thinks. The workflow has to open that stream mid-run, hold it, and close it on the right event —
+here, `session.status_(idle|terminated)`, with a five-minute ceiling. n8n shipped no way to do that,
+so the node was written and published. The component in this repository with the most external
+users was built to unblock the system in this one.
 
-**Speech gets a second model, because transcription is not the last word.** A voice note goes to
+**4. Speech gets a second model, because transcription is not the last word.** A voice note goes to
 Whisper, and the raw transcript then passes through a small model whose only job is to repair it:
 homophones, proper nouns, mangled idioms. The instruction that matters is the conservative one —
 when in doubt, keep the original. A correction pass that rewrites freely is worse than no pass at
 all, because it launders its own errors into fluent, confident text.
 
-**Voice in, voice out.** The output branch reads the *input* type, not a user setting: a question
+**5. Voice in, voice out.** The output branch reads the *input* type, not a user setting. A question
 asked aloud is answered aloud, a typed one is answered in text. Nobody configures anything.
 
 ### Code
@@ -135,9 +141,9 @@ asked aloud is answered aloud, a typed one is answered in text. Nobody configure
 
 ## Why this is here
 
-The engineering worth showing is the audit, not the wiring. Watching a token bill, breaking it
-down by what actually consumed it, finding that most of it bought nothing, and rebuilding around
-that finding — that sequence is what keeps an AI feature alive past its first invoice.
+The engineering worth showing is the audit, not the wiring. Watching a token bill, breaking it down
+by what actually consumed it, finding that most of it bought nothing, and rebuilding around that
+finding — that sequence is what keeps an AI feature alive past its first invoice.
 
 The same reflex runs through the [role matching pipeline](../role-matching-pipeline), where three
 sources were cut on a cost-per-result table.
