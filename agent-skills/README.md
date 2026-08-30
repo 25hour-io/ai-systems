@@ -7,7 +7,10 @@ That is the difference between using AI and enabling it. A prompt typed into a w
 problem for one person and disappears. A skill carries expertise that someone else can run
 without holding the expertise themselves.
 
-Three are published here, covering three different jobs.
+Three are published here, covering three different jobs. Two of them, `application-builder` and
+`interview-trainer`, are one product: the procedures a career coach runs with a client, from the application that goes out to the rehearsal before the
+interview. They pair with the [role matching pipeline](../role-matching-pipeline), which finds the
+postings in the first place.
 
 ---
 
@@ -40,14 +43,18 @@ half-translated page.
 
 ## [`application-builder`](./application-builder.md) — recruitment documents under a fact ceiling
 
-Produces a tailored CV and cover letter from a job posting.
+Built for a career coach. Produces a tailored CV and cover letter for a client, from a job posting.
+
+The reason it exists as a written procedure rather than a habit: a coach who tailors twenty
+applications a week cannot re-derive the rules each time, and cannot let quality drift between the
+first client of the month and the last.
 
 The mechanism is `Structural`, and it is the same one described in the
-[role matching pipeline](../role-matching): the source CV is a verified superset, deliberately too
+[role matching pipeline](../role-matching-pipeline): the source CV is a verified superset, deliberately too
 long to send. Each application is a copy that is only ever **cut down**. Removal cannot fabricate.
 
-A fact missing from the template is escalated to the human and added to the template. It never
-enters a generated document directly. The agent prepares; the human reviews and sends.
+A fact missing from the template is escalated to the coach and added to the template. It never
+enters a generated document directly. The agent prepares; the coach reviews, the client sends.
 
 The procedure also documents where the guarantee stops. A second model reviews the letter for
 style, and that model receives none of the rules — no fact ceiling, no protected formulas. So the
@@ -56,8 +63,12 @@ guarantee ends is part of the guarantee.**
 
 ## [`interview-trainer`](./interview-trainer.md) — training simulation
 
-Runs a spoken mock interview in French, English or Hebrew. The interviewer speaks aloud, the
-candidate answers, every answer is debriefed in writing, and the session ends in a written report.
+The other half of the coaching product. Runs a spoken mock interview in French, English or Hebrew:
+the interviewer speaks aloud, the client answers, every answer is debriefed in writing, and the
+session ends in a written report the coach can work from.
+
+It is the piece a coach cannot scale by hand. Rehearsal only works if it is repeated, and no coach
+bills for the fourth run of the same question set.
 
 It reads the documents that were actually sent for that application, so the questions come from
 the real file rather than from a generic bank.
