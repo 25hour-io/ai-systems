@@ -1,6 +1,6 @@
 # Evaluation — payload preservation
 
-The [Comm Digest](../README.md) prompt tells the model to reproduce actionable payloads verbatim:
+The [Channel Digest Agent](../README.md) prompt tells the model to reproduce actionable payloads verbatim:
 full URLs, exact amounts, access codes, contact details. A summariser that paraphrases a payment
 link has destroyed the message.
 
