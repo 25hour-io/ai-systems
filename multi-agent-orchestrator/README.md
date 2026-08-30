@@ -3,7 +3,8 @@
 An orchestration layer over business tools, reached through chat. Ask it anything; it routes to
 the agent that owns that surface and answers. It runs internally under the name *Hubert*.
 
-**Live.** 10 agents deployed on Anthropic Managed Agents.
+**Live.** A thin router plus 10 callable sub-agents, deployed on Anthropic Managed Agents. That is
+the architecture running today — the monolith the story below starts with is the one it replaced.
 
 | Agent | Surface |
 |---|---|
@@ -33,10 +34,10 @@ capabilities it had no intention of reaching for.
 At 50 to 100 interactions a day, an assistant on that architecture costs more per month than the
 work it saves.
 
-## The redesign
+## The redesign, which is what runs now
 
-Split the monolith into a thin router plus callable sub-agents. Only the relevant sub-agent's tools
-load per query.
+The monolith was split into a thin router plus callable sub-agents. Only the relevant sub-agent's
+tools load per query.
 
 Two effects follow:
 
@@ -48,9 +49,13 @@ Two effects follow:
 A third effect is structural. The workflow engine comes out of the middle as orchestration
 middleware, which removes a hop and a moving part.
 
-**Status of the numbers.** The 0.25 $ figure is `MEASURED` on the running system. The ~0.006 $
-figure is a `DESIGN TARGET` for the callable-agent architecture, not an observed result. The
-sub-agent pattern itself was already validated in production on a master agent running since 2025.
+**Which architecture is live, and what each number describes.** The deployed system is the router
+plus callable sub-agents — the monolith is gone. The 0.25 $ is `MEASURED`, on that monolith: it is
+what the old architecture cost per request, and the reason the current one exists. The ~0.006 $ is
+the `DESIGN TARGET` the rebuild was built to hit — the tool catalogue no longer travels with every
+request, which is where the factor of 40 comes from, but that figure is projected from token volumes
+rather than read off a month of invoices. The sub-agent pattern itself has been running in
+production since 2025.
 
 ---
 
