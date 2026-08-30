@@ -5,7 +5,13 @@ it, tags it, links it to related entries, and makes the whole corpus searchable 
 
 **Live at [memo.25hour.io](https://memo.25hour.io)** — web and native Android from one codebase.
 
-10,500 lines of TypeScript · 101 commits · 20 API routes · `MEASURED`
+10,500 lines of TypeScript · 101 commits · 20 API routes · ~62 memos captured per month · `MEASURED`
+
+![Vox Memo, web client](./media/vox-memo-web.png)
+
+*Memo content is blurred; the interface is not. Capture sits at the top because capture has to cost
+nothing — a note the user hesitates to write is a note the system never gets. Everything below it
+(titles, summaries, tags, the pinned set) is written by the enrichment pipeline, not by the user.*
 
 ---
 
