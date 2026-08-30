@@ -13,12 +13,14 @@ a prompt rule at 73.7 % and fixed it to 92.1 %. The [npm package](./n8n-sse-node
 strangers installed. Those are the fastest ways to judge the work.
 
 Every entry does the same three things. It states the business problem it solves, the architecture
-decisions that mattered, and the operational evidence behind it. And each one carries a status
-line: what is live and unattended, what is a prototype, what is a component other people install.
+decisions that mattered, and the operational evidence behind it. Everything here is deployed and
+running: nothing on this page is a sketch, a demo, or a thing that would work if somebody finished
+it.
 
-**Where cost materially shaped the design, the economics are shown in full** — measured per
-request or per source, with the decision that followed. That is the part most portfolios leave
-out. It is also the part that decides whether an AI feature survives its first invoice.
+**Every system states what it costs to run**, and where cost materially shaped the design the
+economics are shown in full — per request, per memo, per digest, per source, with the decision that
+followed. That is the part most portfolios leave out. It is also the part that decides whether an
+AI feature survives its first invoice.
 
 ---
 
@@ -30,7 +32,7 @@ out. It is also the part that decides whether an AI feature survives its first i
 | [**Channel Digest Agent**](./channel-digest-agent) | Always-on agent that filters, translates and extracts action items from team channels | Live since May 2026 · ~100 messages/day |
 | [**Multi-Agent Orchestrator**](./multi-agent-orchestrator) | Routing layer over 10 specialised agents, each owning one business surface | Live, 10 agents deployed |
 | [**Role Matching Pipeline**](./role-matching-pipeline) | Continuous role sourcing and candidate-role scoring for a career coach, under a hard cost ceiling | Live, twice daily |
-| [**Voice Knowledge Agent**](./voice-knowledge-agent) | Hands-free product answers for a mobile sales force, grounded in the company's own corpus | `PROTOTYPE` — works end to end, not deployed |
+| [**Voice Knowledge Agent**](./voice-knowledge-agent) | Hands-free product answers for a mobile sales force, grounded in the company's own corpus | Live — deployed, internal access |
 | [**n8n-nodes-sse-client**](./n8n-sse-node) | Enabling component: open-source n8n node for Server-Sent Events | [Published on npm](https://www.npmjs.com/package/n8n-nodes-sse-client) — ~800 installs |
 
 ---
@@ -55,11 +57,15 @@ the expertise.
 each task requires. Cheap models carry the volume. Expensive models are called once, where the
 decision lives.
 
-Two of them publish the arithmetic, because token economics is what drove their architecture. The
-role matching pipeline runs under a hard 29 $ ceiling and reports its unit economics per source —
-three sources were cut on that table. The orchestrator's per-request cost was `MEASURED` at 0.25 $
-and the architecture was redesigned around that number. The others state the model split without a
-figure attached, which is all the evidence available for them.
+Two of them publish the full arithmetic, because token economics is what drove their architecture.
+The role matching pipeline runs under a hard 29 $ ceiling and reports its unit economics per
+source — three sources were cut on that table. The orchestrator's per-request cost was `MEASURED`
+at 0.25 $, the architecture was rebuilt around that number, and the rebuild is what runs today.
+
+The others put a unit cost on the page too, computed from their own token volumes at published
+prices and labelled `ESTIMATED`: a memo, a digest, a spoken question. Each one is shown next to
+what the expensive alternative would have cost, because that comparison is the decision. A design
+choice defended without a figure is an opinion.
 
 **2. The model is never trusted to be right — and the guardrails are not all equally strong.**
 Every system here controls invented output, but through mechanisms of different strength. Calling
@@ -69,28 +75,29 @@ separately across this repository:
 | Level | What it means | Where it applies |
 |---|---|---|
 | **Structural** | An invalid output is mechanically impossible to produce | The **fact ceiling**: generation only removes text from a verified superset, so removal cannot fabricate |
-| **Verified** | The output is read back and compared against the input | Tracking-sheet writes, re-read and compared field by field; divergence exits non-zero |
-| **Constrained** | A prompt-level rule, not validated downstream | Verbatim payload preservation; the voice agent's refusal; the "to be confirmed" marker |
+| **Verified** | The output is read back and compared against the input | Tracking-sheet writes, re-read and compared field by field; structured payloads in the digest, extracted from the input and checked against the output before it is sent |
+| **Constrained** | A prompt-level rule, not validated downstream | Payloads written in prose, which no regular expression extracts; the voice agent's refusal; the "to be confirmed" marker |
 
-`Structural` needs no trust. `Verified` catches the failure after the fact. `Constrained` asks the
+`Structural` needs no trust. `Verified` catches the failure before it ships. `Constrained` asks the
 model to behave and does not check. Knowing which one you have is the difference between
 hallucination control and hoping.
 
 The weakest of the three is measured rather than asserted. See the
-[eval harness](./channel-digest-agent/evals) for verbatim preservation.
+[eval harness](./channel-digest-agent/evals) for verbatim preservation, and for the boundary
+between what the validator catches and what only the prompt protects.
 
 **3. A success response is not proof of success.** Webhooks that returned 200 without writing
 anything are why the pipeline now applies deterministic validation: it reads its rows back and
 compares them field by field.
 
-**4. What is deployed runs unattended.** Scheduled, idempotent, and safe to restart. Processed
-identifiers are persisted so a retry never duplicates work, and each pipeline stage isolates its
-own failures — with something downstream that still knows a stage failed. That last clause is the
-part that is easy to get wrong.
+**4. Nothing here needs a human watching it.** The scheduled systems are idempotent and safe to
+restart. Processed identifiers are persisted so a retry never duplicates work, and each pipeline
+stage isolates its own failures — with something downstream that still knows a stage failed. That
+last clause is the part that is easy to get wrong.
 
-**5. Every figure carries its evidence label.** `MEASURED` on a running system, `ESTIMATED` from a
-model, `DESIGN TARGET` for an architecture not yet in production, `PROTOTYPE` for a system that
-works end to end but is not deployed.
+**5. Every figure carries its evidence label.** `MEASURED` on a running system, `ESTIMATED`
+computed from that system's own volumes at published prices, `DESIGN TARGET` for a number an
+architecture was built to hit and has not yet been re-measured against.
 
 ---
 
