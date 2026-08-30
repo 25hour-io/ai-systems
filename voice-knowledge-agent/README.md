@@ -100,6 +100,21 @@ models return no error, only quietly meaningless distances.
 answer to "it does not know about X" is always to upload X — never to loosen the constraint. That
 is only a workable policy because uploading takes a browser and thirty seconds.
 
+**A second ingestion path was prototyped, and not kept.** Web pages are the awkward source: an
+article arrives wrapped in navigation, advertising, cookie banners and comment threads, and
+indexing that noise costs retrieval quality on every question asked afterwards. The prototype put a
+small model in front of the vector store to make the editorial cut — keep the title, author, date,
+source and body, drop everything else — and hand clean text to the same indexing step.
+
+It was dropped for a structural reason rather than a quality one. An agent node returns text; it
+does not carry a binary through to the step after it. So a single path could not serve both cases,
+and routing files through it would have meant a model rewriting a PDF that should reach the corpus
+untouched — one model call per upload, and no way to check what the rewrite dropped. The file path
+stays model-free, which is both the cheaper option and the faithful one.
+
+Cleaning web pages before indexing is a real problem and it is still open here. It just does not
+belong between the upload form and the vector store.
+
 ---
 
 ## Why it is a `PROTOTYPE`, and not more
