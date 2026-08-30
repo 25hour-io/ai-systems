@@ -24,7 +24,7 @@ road: that is not a nicer front end, it is the only usable one.
 
 The full system answers from two sources: the product documentation, and live stock levels. **This
 folder is a zoom on the documentation half** — the corpus, its indexing, and the retrieval that
-keeps answers inside it. Stock is a different problem with a different failure mode: it is a live
+keeps answers inside it. Stock is a different problem with a different failure mode. It is a live
 query against a system of record, where the risk is staleness rather than invention.
 
 ## Stack
@@ -37,47 +37,47 @@ OpenAI `text-embedding-3-small` for retrieval.
 ## Grounding is the whole point
 
 A voice agent that invents is worse than no agent. Text lets a reader see a hedge and check a
-source. Speech carries confidence and leaves no trail — a fabricated answer sounds exactly like a
+source. Speech carries confidence and leaves no trail: a hallucinated answer sounds exactly like a
 correct one, and it is gone the moment it is spoken.
 
-So the architecture holds the answer to the corpus:
+So the architecture holds the answer to the corpus. Four rules do that work.
 
-**Retrieve first, answer second.** Retrieval-augmented generation over the indexed corpus: every
+**1. Retrieve first, answer second.** Retrieval-augmented generation over the indexed corpus: every
 response is built on passages pulled from it. The model composes; the corpus supplies the facts.
 Bounding what the model sees is an architectural constraint, and it is the strongest control here.
 
-**Say when there is nothing.** An empty or weak retrieval produces "I don't have that", which is
-the correct answer and the one users trust. A plausible-sounding guess destroys the trust the
-whole system runs on.
+**2. Say when there is nothing.** An empty or weak retrieval produces "I don't have that", which is
+the correct answer and the one users trust. A plausible-sounding guess destroys the trust the whole
+system runs on.
 
 ⚠️ **The refusal itself is `Constrained`.** Retrieval bounds what the model sees; nothing
 mechanically forces the answer to stay inside what came back. Groundedness here rests on a
 prompt-level rule, and measuring it against a labelled question set is exactly what stands between
 this prototype and a product.
 
-**The agent has no access to the internet, and that is a guardrail rather than a limitation.** It
+**3. The agent has no access to the internet, and that is a guardrail rather than a limitation.** It
 cannot search the web, so it cannot reach a competitor's specification sheet, an outdated PDF of a
 product that was revised two years ago, or a forum thread stating something plausible and wrong. In
 this deployment the difference is commercial: a rep who repeats a figure to a customer has committed
 the company to it, and a figure that came from the open web is one nobody can stand behind.
 
-Cutting the network narrows where a wrong answer can come from — it does not make the remaining
+Cutting the network narrows where a wrong answer can come from. It does not make the remaining
 answers true. The model still holds its training weights, and nothing mechanically stops it from
 composing a plausible sentence out of them. What the isolation buys is a corpus that is auditable:
 when an answer is wrong, the document that made it wrong is in the index and can be fixed. A wrong
 answer sourced from the open web cannot be traced, cannot be corrected, and will come back.
 
-**The corpus is the boundary.** Coverage is expanded by indexing more sources. It is never expanded
-by loosening the constraint — and with no network to fall back on, that is the only way it can be
-expanded at all.
+**4. The corpus is the boundary.** Coverage is expanded by indexing more sources. It is never
+expanded by loosening the constraint — and with no network to fall back on, that is the only way it
+can be expanded at all.
 
-Three systems attack the same problem, and it is worth being precise about how each one holds.
-The [role matching pipeline](../role-matching-pipeline) enforces a `Structural` fact ceiling on generated
-documents: removal cannot fabricate, so nothing has to be checked. This agent and the
-[channel digest agent](../channel-digest-agent) both sit at `Constrained`: the architecture narrows what the model
-sees, and a prompt-level rule asks it to stay inside.
+Three systems in this repository attack the same problem, and it is worth being precise about how
+each one holds. The [role matching pipeline](../role-matching-pipeline) enforces a `Structural` fact
+ceiling on generated documents: removal cannot fabricate, so nothing has to be checked. This agent
+and the [channel digest agent](../channel-digest-agent) both sit at `Constrained`: the architecture
+narrows what the model sees, and a prompt-level rule asks it to stay inside.
 
-Same principle, three different strengths. Saying so is the point — an unmeasured constraint
+Same principle, three different strengths. Saying so is the point. An unmeasured constraint
 described as a guarantee is the first thing a technical reader will test.
 
 ---
@@ -102,11 +102,11 @@ difference between a corpus that grows and one that was loaded once at launch an
 stale — and a stale corpus is worse than a small one, because the agent answers from it with the
 same confidence either way.
 
-**The form carries basic auth.** It is the only route that writes into the corpus, and the corpus
-is the whole of what the agent is allowed to say. An unauthenticated upload endpoint is not a
-missing feature, it is a way to put words in the agent's mouth: anything indexed becomes something
-the agent will state as grounded fact. The boundary that makes retrieval trustworthy is only as
-strong as the door in front of it.
+**The form carries basic auth.** It is the only route that writes into the corpus, and the corpus is
+the whole of what the agent is allowed to say. An unauthenticated upload endpoint is not a missing
+feature, it is a way to put words in the agent's mouth: anything indexed becomes something the agent
+will state as grounded fact. The boundary that makes retrieval trustworthy is only as strong as the
+door in front of it.
 
 **Chunking and embedding hang off the insert rather than preceding it.** The data loader and the
 embedding model are sub-nodes of the vector store, so splitting the document, computing its vectors
@@ -115,18 +115,18 @@ half-indexed — chunks present, vectors missing — which is precisely the stat
 retrievals and makes an agent say "I don't have that" about a document somebody watched it accept.
 
 **Same embedding model on both sides.** The corpus is embedded with `text-embedding-3-small`, which
-is what the query is embedded with too. Obvious written down, and silent when it is wrong: mismatched
-models return no error, only quietly meaningless distances.
+is what the query is embedded with too. Obvious written down, and silent when it is wrong:
+mismatched models return no error, only quietly meaningless distances.
 
 **This is the operation that expands coverage.** The agent refuses what it cannot retrieve, so the
-answer to "it does not know about X" is always to upload X — never to loosen the constraint. That
-is only a workable policy because uploading takes a browser and thirty seconds.
+answer to "it does not know about X" is always to upload X, never to loosen the constraint. That is
+only a workable policy because uploading takes a browser and thirty seconds.
 
-**A second ingestion path was prototyped, and not kept.** Web pages are the awkward source: an
-article arrives wrapped in navigation, advertising, cookie banners and comment threads, and
-indexing that noise costs retrieval quality on every question asked afterwards. The prototype put a
-small model in front of the vector store to make the editorial cut — keep the title, author, date,
-source and body, drop everything else — and hand clean text to the same indexing step.
+**A second ingestion path was prototyped, and not kept.** Web pages are the awkward source. An
+article arrives wrapped in navigation, advertising, cookie banners and comment threads, and indexing
+that noise costs retrieval quality on every question asked afterwards. The prototype put a small
+model in front of the vector store to make the editorial cut — keep the title, author, date, source
+and body, drop everything else — and hand clean text to the same indexing step.
 
 It was dropped for a structural reason rather than a quality one. An agent node returns text; it
 does not carry a binary through to the step after it. So a single path could not serve both cases,
@@ -141,8 +141,8 @@ belong between the upload form and the vector store.
 
 ## Why it is a `PROTOTYPE`, and not more
 
-The retrieval and voice layers work end to end. Nothing is deployed, nothing runs unattended, and
-no cost figure exists — there is no traffic to measure.
+The retrieval and voice layers work end to end. Nothing is deployed, nothing runs unattended, and no
+cost figure exists — there is no traffic to measure.
 
 Ingestion is the one operational piece that is built, and it is described above. What is missing is
 the rest of that half: freshness and re-indexing when a source document changes, deletion of what
@@ -152,8 +152,7 @@ quality against a labelled question set instead of by impression. The
 is done. Until it is done here, the grounding claim on this page stays `Constrained`.
 
 Freshness is the one that carries the most weight in this deployment, and it follows directly from
-cutting the network. An isolated agent is exactly as current as its last upload: a specification
-revised at head office is wrong in the field until somebody re-indexes it, and nothing in the
-system knows that. The corpus being the only source is what makes the answers accountable, and it
-is also what makes the upload discipline a production requirement rather than an administrative
-one.
+cutting the network. An isolated agent is exactly as current as its last upload. A specification
+revised at head office is wrong in the field until somebody re-indexes it, and nothing in the system
+knows that. The corpus being the only source is what makes the answers accountable. It is also what
+makes the upload discipline a production requirement rather than an administrative one.
