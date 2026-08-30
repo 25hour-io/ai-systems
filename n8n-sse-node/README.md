@@ -35,6 +35,17 @@ Built in TypeScript, published under the MIT licence.
 
 ---
 
+## Where it runs
+
+It was not written as an exercise. The [multi-agent orchestrator](../multi-agent-orchestrator) in
+this repository answers over a managed-agent session that emits Server-Sent Events and can run for
+minutes while it calls tools. Its gateway has to open that stream in the middle of a workflow, hold
+it, and close it on `session.status_(idle|terminated)` — the exact shape n8n had no node for.
+
+That is also where the stop condition stopped being a design question and became a specific one: a
+stream that never closes hangs a workflow, and a stream closed too early truncates the answer a
+user is waiting on.
+
 ## Why it is in this portfolio
 
 It is the smallest item here and the only one other people already depend on. Roughly 800
