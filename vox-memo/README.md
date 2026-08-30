@@ -20,8 +20,8 @@ nothing — a note the user hesitates to write is a note the system never gets. 
 Captured knowledge accumulates faster than anyone re-reads it, and a note nobody finds again was
 never really captured. The value sits entirely in retrieval.
 
-So the system moves the filing work to write time, where the context is still available, and
-makes recall work by meaning rather than by remembered keywords.
+So the system does two things. It moves the filing work to write time, where the context is still
+available. And it makes recall work by meaning rather than by remembered keywords.
 
 ## Stack
 
@@ -64,7 +64,7 @@ Source: [`code/pipeline.ts`](./code/pipeline.ts) ·
 during enrichment, while the phrase still has a reference point. Resolving it at read time would
 mean guessing which Thursday.
 
-**The model cleans its own instructions out of the text.** A spoken memo carries meta-speech —
+**The model cleans its own instructions out of the text.** A spoken memo carries meta-speech:
 "remind me to", "note for later". Enrichment extracts the intent into a field and strips the
 phrase from the stored text, so the note reads as a note.
 
@@ -79,39 +79,51 @@ routes as the web app.
 **Row-level security on every table**, with three separate auth paths: session cookies for app
 routes, an API key header for agent routes, a bearer secret for cron routes.
 
-**Done means done.** `ai_processed` is set only when enrichment and embedding both succeed.
-Crawling and linking are best-effort — a memo without them is still complete. This is a fix, not
-an original design: the flag used to be written unconditionally, so a memo whose enrichment had
-failed was marked processed and quietly stopped being a candidate for any retry. An external
-review of this published file caught it. Failure isolation per step is only safe when something
-downstream still knows a step failed.
+---
 
-**A flag nobody reads back is only a tidier way to fail.** Writing `ai_processed` honestly is
-worth something only if a memo left at `false` gets picked up again — and nothing picked it up.
-Three cron jobs ran against this database and none of them looked at the flag; the client-side
-poller gave up after fifteen attempts and re-queued nothing. Twenty-one memos had been sitting
-unprocessed, the oldest untouched for three months. The retry is now a cron of its own, and the
-two decisions inside it were paid for in measurement rather than settled in design:
+## The one that unfolds like a detective story
 
-*It answers before it works.* The scheduler is `pg_cron` reaching the route through `pg_net`,
-whose `net.http_get` closes the connection at 30 seconds. A route that does the work before
-responding is killed mid-pipeline on every cycle — the first live run burned two attempt counters
-and finished zero memos. So the batch is claimed, the response goes out, and the work runs in
-`after()`. The response reports what was picked up, never what succeeded; the verdict is read from
-the database.
+The interesting section of this system is not the pipeline. It is a two-line flag, and what it
+took to make it honest.
+
+**Chapter one: done means done.** `ai_processed` is set only when enrichment and embedding both
+succeed. Crawling and linking are best-effort — a memo without them is still complete. This is a
+fix, not an original design. The flag used to be written unconditionally, so a memo whose
+enrichment had failed was marked processed and quietly stopped being a candidate for any retry. An
+external review of this published file caught it. Failure isolation per step is only safe when
+something downstream still knows a step failed.
+
+**Chapter two: a flag nobody reads back is only a tidier way to fail.** Writing `ai_processed`
+honestly is worth something only if a memo left at `false` gets picked up again — and nothing
+picked it up. Three cron jobs ran against this database and none of them looked at the flag. The
+client-side poller gave up after fifteen attempts and re-queued nothing. Twenty-one memos had been
+sitting unprocessed, the oldest untouched for three months.
+
+The retry is now a cron of its own. The two decisions inside it were paid for in measurement rather
+than settled in design, and each one has a plot twist of its own.
+
+*It answers before it works.* The scheduler is `pg_cron` reaching the route through `pg_net`, whose
+`net.http_get` closes the connection at 30 seconds. That is a hard latency budget, and a route that
+does the work before responding is killed mid-pipeline on every cycle. The first live run burned
+two attempt counters and finished zero memos. So the batch is claimed, the response goes out, and
+the work runs in `after()`. The response reports what was picked up, never what succeeded. The
+verdict is read from the database.
 
 *A counter is not a lock.* Incrementing an attempt counter bounds how many times a memo can be
-tried, but it excludes nothing: while the count sits under the maximum, a concurrent cycle selects
+tried, but it excludes nothing. While the count sits under the maximum, a concurrent cycle selects
 the same rows again. Four consecutive manual cycles returned the same memo id, which on this
 pipeline means paying twice for the same crawl and the same two model calls. A claim timestamp now
-sits beside the counter. One bounds the total cost, the other enforces mutual exclusion — they are
+sits beside the counter. One bounds the total cost, the other enforces mutual exclusion. They are
 not the same guarantee, and neither substitutes for the other.
+
+The wisdom lesson, if there is one: a status flag that nothing reads back is a comment, not a
+mechanism.
 
 ---
 
 ## How the model spend is shaped
 
-No per-request figure is published for this system: the traffic is one user's, so any number here
+No per-request figure is published for this system. The traffic is one user's, so any number here
 would describe a sample of one rather than an operating cost.
 
 What is decided is the split. Haiku carries enrichment and vision, which is the high-volume work.
