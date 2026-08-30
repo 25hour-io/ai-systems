@@ -1,6 +1,6 @@
 ---
 name: application-builder
-description: Builds a complete application package from a job posting - tailors the CV, generates the PDF, writes the cover letter and a short covering note, updates the tracking sheet and returns the link to apply. Use when the user wants to apply to a posting, says "apply to X", "prepare my application", "tailor my CV for this posting".
+description: Builds a complete application package from a job posting - tailors the CV, generates the PDF, writes the cover letter and a short covering note, updates the tracking sheet and returns the link to apply. Use when the coach wants to apply a client to a posting, says "apply to X", "prepare the application for this posting", "tailor the CV for this posting".
 ---
 
 # Building an application package

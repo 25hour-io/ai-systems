@@ -1,7 +1,7 @@
-# Hubert
+# Multi-Agent Orchestrator
 
-An agentic orchestration layer over business tools, reached through chat. Ask it anything; it
-routes to the agent that owns that surface and answers.
+An orchestration layer over business tools, reached through chat. Ask it anything; it routes to
+the agent that owns that surface and answers. It runs internally under the name *Hubert*.
 
 **Live.** 10 agents deployed on Anthropic Managed Agents.
 
@@ -12,7 +12,7 @@ routes to the agent that owns that surface and answers.
 | Tavily | Web research |
 | Telegram · WhatsApp · X | Messaging and monitoring |
 | Memo | Knowledge capture (see [Vox Memo](../vox-memo)) |
-| Hubert | Routing |
+| Router | Query classification and dispatch |
 
 ---
 
@@ -57,5 +57,5 @@ The engineering worth showing is the audit, not the wiring. Watching a token bil
 down by what actually consumed it, finding that most of it bought nothing, and rebuilding around
 that finding — that sequence is what keeps an AI feature alive past its first invoice.
 
-The same reflex runs through the [role matching pipeline](../role-matching), where three sources
+The same reflex runs through the [role matching pipeline](../role-matching-pipeline), where three sources
 were cut on a cost-per-result table.

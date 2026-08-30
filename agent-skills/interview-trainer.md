@@ -1,6 +1,6 @@
 ---
 name: interview-trainer
-description: Runs a spoken mock interview in French, English (--en) or Hebrew (--he) - asks the questions, debriefs every answer in writing, produces a written report. HR screening, hiring manager, pressure questions. "train me for the interview".
+description: Runs a spoken mock interview in French, English (--en) or Hebrew (--he) - asks the questions, debriefs every answer in writing, produces a written report. HR screening, hiring manager, pressure questions. "run the rehearsal for this interview".
 ---
 
 # Spoken interview training
