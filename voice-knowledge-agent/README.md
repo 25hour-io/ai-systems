@@ -3,7 +3,8 @@
 A real-time voice agent that answers spoken questions from a company's own corpus. You talk, it
 retrieves, it answers, and it answers only from what it retrieved.
 
-**`PROTOTYPE`.** Real-time voice over WebSocket, retrieval-augmented generation over pgvector.
+**Live — deployed, internal access.** Real-time voice over WebSocket, retrieval-augmented
+generation over pgvector.
 
 ---
 
@@ -13,8 +14,8 @@ A company selling technical systems through a mobile sales force. Its reps spend
 between customer sites, and the questions that decide a sale arrive between two appointments: which
 model fits this configuration, what the specification actually says, what is in stock right now.
 
-Today those questions cost a phone call to someone at head office, or they wait until evening. Both
-answers arrive after the conversation that needed them.
+Before this agent, those questions cost a phone call to someone at head office, or they waited
+until evening. Both answers arrive after the conversation that needed them.
 
 **The constraint is the steering wheel, and it is what makes voice necessary rather than pleasant.**
 A rep at the wheel cannot read a specification sheet, cannot type a precise search query, and cannot
@@ -52,8 +53,9 @@ system runs on.
 
 ⚠️ **The refusal itself is `Constrained`.** Retrieval bounds what the model sees; nothing
 mechanically forces the answer to stay inside what came back. Groundedness here rests on a
-prompt-level rule, and measuring it against a labelled question set is exactly what stands between
-this prototype and a product.
+prompt-level rule, and the honest thing is to grade it as one — the same way the
+[channel digest agent](../channel-digest-agent/evals) graded its own prompt rule before putting it
+on a bench and finding out it was worth 73.7 %.
 
 **3. The agent has no access to the internet, and that is a guardrail rather than a limitation.** It
 cannot search the web, so it cannot reach a competitor's specification sheet, an outdated PDF of a
@@ -73,9 +75,10 @@ can be expanded at all.
 
 Three systems in this repository attack the same problem, and it is worth being precise about how
 each one holds. The [role matching pipeline](../role-matching-pipeline) enforces a `Structural` fact
-ceiling on generated documents: removal cannot fabricate, so nothing has to be checked. This agent
-and the [channel digest agent](../channel-digest-agent) both sit at `Constrained`: the architecture
-narrows what the model sees, and a prompt-level rule asks it to stay inside.
+ceiling on generated documents: removal cannot fabricate, so nothing has to be checked. The [channel digest agent](../channel-digest-agent) reached `Verified` on the payloads a regular
+expression can extract, by checking its output against its input before delivery. This agent sits
+at `Constrained`: the architecture narrows what the model sees, and a prompt-level rule asks it to
+stay inside.
 
 Same principle, three different strengths. Saying so is the point. An unmeasured constraint
 described as a guarantee is the first thing a technical reader will test.
@@ -139,17 +142,34 @@ belong between the upload form and the vector store.
 
 ---
 
-## Why it is a `PROTOTYPE`, and not more
+## What it costs to run
 
-The retrieval and voice layers work end to end. Nothing is deployed, nothing runs unattended, and no
-cost figure exists — there is no traffic to measure.
+**The retrieval half is effectively free.** One embedding of the spoken question on
+`text-embedding-3-small` — a 20-token query at published prices is 0.0000004 $ — plus a pgvector
+lookup, which costs a database round trip and nothing else. `ESTIMATED`, computed from token volumes
+at published prices.
 
-Ingestion is the one operational piece that is built, and it is described above. What is missing is
-the rest of that half: freshness and re-indexing when a source document changes, deletion of what
-has been superseded, and — the one that actually separates this from a product — measuring answer
-quality against a labelled question set instead of by impression. The
+**The bill is the voice half**, billed per minute of audio in and out. That gives this system an
+unusual cost shape, and a favourable one: **cost scales with how long the reps talk, not with how
+much the corpus holds.** Indexing ten times more documentation makes the agent more useful at an
+identical price per question — the opposite of a system that stuffs a context window to get smarter,
+where every source added is on every invoice afterwards.
+
+So the only lever that matters is answer length, and the product already pulls that way. A rep at
+the wheel wants the figure, not a paragraph. The cheap version and the usable version are the same
+version.
+
+---
+
+## What is still missing
+
+Ingestion is the operational piece that is built, and it is described above. The rest of that half
+is not: freshness and re-indexing when a source document changes, deletion of what has been
+superseded, and — the one that carries the grounding claim — measuring answer quality against a
+labelled question set instead of by impression. The
 [channel digest agent](../channel-digest-agent/evals) shows what that measurement looks like when it
-is done. Until it is done here, the grounding claim on this page stays `Constrained`.
+is done. Until it is done here, the grounding claim on this page stays `Constrained`, and saying so
+is cheaper than being caught claiming otherwise.
 
 Freshness is the one that carries the most weight in this deployment, and it follows directly from
 cutting the network. An isolated agent is exactly as current as its last upload. A specification
