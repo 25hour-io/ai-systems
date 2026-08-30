@@ -92,10 +92,21 @@ The full system prompt is in [`system-prompt.md`](./system-prompt.md). It is the
 
 ## Decisions worth reading
 
-**The model split is a cost decision.** Haiku handles the high-volume, low-judgment work: describe
-an image, summarize a PDF. Sonnet runs once per cycle on the assembled transcript, where the
-judgment actually lives. Sonnet on every attachment would multiply the bill and leave output
-quality where it already was.
+**The model split is a cost decision, and here is the arithmetic.** Haiku handles the high-volume,
+low-judgment work: describe an image, summarize a PDF. Sonnet runs once per cycle on the assembled
+transcript, where the judgment actually lives.
+
+A cycle that produces a digest carries roughly 4,000 input tokens — system prompt plus assembled
+transcript — and returns about 800. That is **~0.024 $ on Sonnet**, plus **~0.002 $ per attachment**
+on Haiku. At the deployed channel's ~100 messages a day it lands near **0.60 $ a day, 15 to 20 $ a
+month**. `ESTIMATED`, computed from the workflow's own token volumes at published prices.
+
+The split is what holds that number. The same attachments on Sonnet would run **~0.007 $ each**,
+three to four times the price for a description and a summary — work with no judgment in it at all —
+and would leave output quality exactly where it already was. Note also what the cadence does *not*
+cost: the schedule fires 288 times a day, but a cycle with no new messages costs a fetch and nothing
+more. **The bill tracks message volume, not schedule frequency**, which is what made a five-minute
+cadence affordable in the first place.
 
 **Zero round-trip is the product principle.** The reader must never need to reopen the source
 channel. Every other rule in the prompt follows from this one.
@@ -116,15 +127,21 @@ further prompt iteration is expected to reach 100 %.
 
 The retention rule is **deployed** — measured first, shipped second.
 
-**That ceiling is the point.** A prompt rule improves behaviour; it does not guarantee it. Which is
-why [`validate.mjs`](./evals/validate.mjs) extracts payloads from the input and checks them against
-the output. It is written and measured, and **not yet wired into the running workflow**. So in
-production this guardrail is still `Constrained`, and the mechanism that would make structured
-payloads `Verified` is sitting one integration away. Full numbers, limits and deployment status are
-in [`evals/README.md`](./evals/README.md).
+**That ceiling is why the pipeline checks the model's work.** A prompt rule improves behaviour; it
+does not guarantee it. So [`validate.mjs`](./evals/validate.mjs) runs on every digest ahead of
+delivery: it extracts payloads from the **input** with regular expressions, checks each one against
+the **output**, and blocks a digest that lost one.
+
+That moves the guardrail, and only half of it. **Structured payloads — URLs, email addresses,
+references, amounts, times, ISO dates — are `Verified` in production**: a loss is mechanically
+detected rather than hoped against. Payloads written in prose — `Thursday 14 May`, `46 days`, a
+postal address — stay `Constrained`, because a regular expression catches structure and not natural
+language. Naming that boundary is more useful than one grade covering both. Full numbers and limits
+are in [`evals/README.md`](./evals/README.md).
 
 **Never invent.** Ambiguous content is translated with a "to be confirmed" marker. Missing
-information stays missing. Same level: `Constrained`.
+information stays missing. Nothing downstream validates this one, so it is `Constrained` — a rule
+the model follows, not a check the pipeline performs.
 
 **Explain the empty result.** When nothing qualifies, the agent still states in one sentence what
 the channel was discussing, then concludes. This came out of field use. A bare "nothing relevant"
