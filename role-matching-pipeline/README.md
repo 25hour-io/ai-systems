@@ -1,12 +1,17 @@
 # Role Matching Pipeline
 
-Continuous role sourcing and candidate-role scoring, running unattended under a hard cost ceiling.
+Built for a career coach. Continuous role sourcing and candidate-role scoring for the clients they
+place, running unattended under a hard cost ceiling.
 
-Twice a day it pulls new postings from every configured source, drops what it has already seen,
-scores each remaining role against a structured candidate profile, files the survivors in a
-tracking sheet and sends a digest.
+Twice every working day it pulls new postings from every configured source, drops what it has
+already seen, scores each remaining role against a client's structured profile, files the survivors
+in a tracking sheet and sends the coach a digest.
 
-**Live**, Sunday to Thursday, 09:03 and 14:03. Runs in a cloud sandbox with no human in the loop.
+**Live**, twice a day, five days a week. Runs in a cloud sandbox with no human in the loop.
+
+The economics are what make this a coaching product rather than a script. A coach carries several
+clients at once and bills a flat fee per engagement, so the sourcing cost per client is a margin
+line, not a rounding error. That constraint is the reason for everything below.
 
 ```
 sources.json → scrape → dedupe against seen.json
