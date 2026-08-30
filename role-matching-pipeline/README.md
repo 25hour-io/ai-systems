@@ -27,19 +27,19 @@ wrong: pulling structured postings out of raw markdown, and judging fit against 
 
 ## Running it on a budget
 
-The scraping account is capped at **29 $ per cycle**. Past the cap the platform stops serving —
-this is a hard stop, not an overage charge.
+The scraping account is capped at **29 $ per cycle**. Past the cap the platform stops serving. This
+is a hard stop, not an overage charge.
 
-Two runs a day, five days a week, is about 22 days a cycle. So the real unit is **1.30 $ per
-day**, and every source gets budgeted against that ceiling rather than against whatever credit
-happens to be left.
+Two runs a day, five days a week, is about 22 days a cycle. So the real unit is **1.30 $ per day**,
+and every source gets budgeted against that ceiling rather than against whatever credit happens to
+be left.
 
 ### The audit
 
 Source names are replaced by labels below. The reasoning is what transfers.
 
-`MEASURED` over one full billing cycle. Cost per run was measured per source, then
-cross-referenced against postings that actually cleared scoring:
+`MEASURED` over one full billing cycle. Cost per run was measured per source, then cross-referenced
+against postings that actually cleared scoring:
 
 | Source | $/run | Verdict |
 |---|---|---|
@@ -61,12 +61,12 @@ One agency exposed its entire catalogue — 1,144 postings with publication date
 REST route on its WordPress install. Same data a paid scraper would return, for nothing, with no
 vendor in the loop.
 
-The habit generalises: on any WordPress site, read `/wp-json/` and look at the routes specific to
+The habit generalises. On any WordPress site, read `/wp-json/` and look at the routes specific to
 that site. A feed also moves filtering to the client side, which is why sources here declare a
 `filter` block instead of passing a keyword to a vendor.
 
-One more finding worth the money it saved: **a scraper labelled FREE is not free** — you still
-pay for its compute. The one advertised that way was the most expensive line on the account.
+One more finding worth the money it saved: **a scraper labelled FREE is not free.** You still pay
+for its compute. The one advertised that way was the most expensive line on the account.
 
 ---
 
@@ -74,20 +74,20 @@ pay for its compute. The one advertised that way was the most expensive line on 
 
 One is `Structural`, one is `Verified` — see the levels in the [repository README](../README.md).
 
-**`Structural` — removal cannot fabricate.** The candidate document template is a superset of verified facts,
-deliberately too long to send. Every generated document is a copy that only ever gets **cut
-down**. Starting from a long verified document and removing is structurally safe; starting from a
-short one and filling it in is where a fictional employer gets in. A missing fact is added to the
-template, never to a generated document.
+**`Structural` — removal cannot fabricate.** The candidate document template is a superset of
+verified facts, deliberately too long to send. Every generated document is a copy that only ever
+gets **cut down**. Starting from a long verified document and removing is structurally safe.
+Starting from a short one and filling it in is where hallucination gets in and a fictional employer
+appears on a CV. A missing fact is added to the template, never to a generated document.
 
 The procedure that enforces this is published as
 [`application-builder`](../agent-skills/application-builder.md).
 
-**`Verified` — a 200 response is not proof of a write.** The tracking sheet webhook returned success without
-writing anything. Worse, the underlying operation invented rather than complained: updating an
-absent identifier created a row, and sending an unknown field created a column — a clean 200 in
-both cases. So the pipeline now applies deterministic validation: it checks the row exists before writing,
-reads it back after, and compares field by field. Divergence exits non-zero.
+**`Verified` — a 200 response is not proof of a write.** The tracking sheet webhook returned
+success without writing anything. Worse, the underlying operation invented rather than complained:
+updating an absent identifier created a row, and sending an unknown field created a column — a
+clean 200 in both cases. So the pipeline now applies deterministic validation. It checks the row
+exists before writing, reads it back after, and compares field by field. Divergence exits non-zero.
 
 ---
 
