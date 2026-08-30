@@ -30,7 +30,7 @@ out, and the part that decides whether an AI feature survives its first invoice.
 | [**Channel Digest Agent**](./channel-digest-agent) | Always-on agent that filters, translates and extracts action items from team channels | Live since May 2026 · ~100 messages/day |
 | [**Multi-Agent Orchestrator**](./multi-agent-orchestrator) | Routing layer over 10 specialised agents, each owning one business surface | Live, 10 agents deployed |
 | [**Role Matching Pipeline**](./role-matching-pipeline) | Continuous role sourcing and candidate-role scoring for a career coach, under a hard cost ceiling | Live, twice daily |
-| [**Voice Knowledge Agent**](./voice-knowledge-agent) | Real-time voice agent answering from a source corpus, grounded | `PROTOTYPE` — works end to end, not deployed |
+| [**Voice Knowledge Agent**](./voice-knowledge-agent) | Hands-free product answers for a mobile sales force, grounded in the company's own corpus | `PROTOTYPE` — works end to end, not deployed |
 | [**n8n-nodes-sse-client**](./n8n-sse-node) | Enabling component: open-source n8n node for Server-Sent Events | [Published on npm](https://www.npmjs.com/package/n8n-nodes-sse-client) — ~800 installs |
 
 ---
