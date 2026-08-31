@@ -1,122 +1,76 @@
-# AI systems in production
+# AI Systems in Production
 
-I design AI systems, put them into production, and then live with the consequences. This
-repository documents a few of them.
+I design, deploy, and operate production AI systems, with continuous monitoring, cost tracking, and
+iteration on live traffic. This repository gathers selected architectures built at
+[25hour](https://25hour.io).
 
-They were built at [25hour](https://25hour.io), an AI automation consultancy. What follows is a
-selection rather than a complete inventory: what is published here is what can be shown, and what
-carries a decision worth reading.
+Key highlights: the [cost audit](./multi-agent-orchestrator) that cut per-request costs by 40x, the
+[eval harness](./channel-digest-agent/evals) that improved prompt accuracy from 73.7% to 92.1%, and
+the [open-source n8n node](./n8n-sse-node) (~800 installs).
 
-If you are scanning, start with three. The [cost audit](./multi-agent-orchestrator) that cut a
-per-request bill by a factor of 40. The [eval harness](./channel-digest-agent/evals) that measured
-a prompt rule at 73.7 % and fixed it to 92.1 %. The [npm package](./n8n-sse-node) that ~800
-strangers installed. Those are the fastest ways to judge the work.
-
-Every entry does the same three things. It states the business problem it solves, the architecture
-decisions that mattered, and the operational evidence behind it. Everything here is deployed and
-running: nothing on this page is a sketch, a demo, or a thing that would work if somebody finished
-it.
-
-**Every system states what it costs to run**, and where cost materially shaped the design the
-economics are shown in full — per request, per memo, per digest, per source, with the decision that
-followed. That is the part most portfolios leave out. It is also the part that decides whether an
-AI feature survives its first invoice.
+Every case study details the business context, core architectural choices, operational metrics, and
+unit costs.
 
 ---
 
-## A few of the systems
+## Deployed Systems
 
-| System | What it does | Status |
+| System | Function | Status |
 |---|---|---|
-| [**Vox Memo**](./vox-memo) | Knowledge capture and semantic retrieval, web + native Android | Live at [memo.25hour.io](https://memo.25hour.io) · ~62 memos/month |
-| [**Channel Digest Agent**](./channel-digest-agent) | Always-on agent that filters, translates and extracts action items from team channels | Live since May 2026 · ~100 messages/day |
-| [**Multi-Agent Orchestrator**](./multi-agent-orchestrator) | Routing layer over 10 specialised agents, each owning one business surface | Live, 10 agents deployed |
-| [**Role Matching Pipeline**](./role-matching-pipeline) | Continuous role sourcing and candidate-role scoring for a career coach, under a hard cost ceiling | Live, twice daily |
-| [**Voice Knowledge Agent**](./voice-knowledge-agent) | Hands-free product answers for a mobile sales force, grounded in the company's own corpus | Live — deployed, internal access |
-| [**n8n-nodes-sse-client**](./n8n-sse-node) | Enabling component: open-source n8n node for Server-Sent Events | [Published on npm](https://www.npmjs.com/package/n8n-nodes-sse-client) — ~800 installs |
+| [**Vox Memo**](./vox-memo) | Knowledge capture & semantic retrieval (web + Android) | Live · ~62 memos/month |
+| [**Channel Digest Agent**](./channel-digest-agent) | Filters, translates, and extracts actions from channels | Live · ~100 msgs/day |
+| [**Multi-Agent Orchestrator**](./multi-agent-orchestrator) | Routing layer across 10 specialized domain agents | Live · 10 agents active |
+| [**Role Matching Pipeline**](./role-matching-pipeline) | Role sourcing & candidate scoring under strict cost caps | Live · 2x daily |
+| [**Voice Knowledge Agent**](./voice-knowledge-agent) | Hands-free product Q&A grounded in enterprise corpus | Live · Internal deployment |
+| [**n8n-nodes-sse-client**](./n8n-sse-node) | Open-source n8n node for Server-Sent Events | [npm](https://www.npmjs.com/package/n8n-nodes-sse-client) · ~800 installs |
 
 ---
 
-## Agent skills
+## Agent Skills
 
-Alongside the systems, three [**agent skills**](./agent-skills) are published here. A skill is an
-operating procedure an agent executes the same way every time.
+[**Agent skills**](./agent-skills) are versioned standard operating procedures
+executed by agents: explicit scope, fixed sequence, named guardrails, and structured output.
 
-One of them builds a client-facing pitch document under sector compliance rules. The other two are
-a single product for a career coach: one generates a client's application documents under a fact
-ceiling, the other runs their interview rehearsal aloud in three languages.
-
-Using AI solves a problem once. A versioned procedure lets someone else solve it without holding
-the expertise.
+Unlike raw prompts, a versioned skill ensures identical execution on every run — consistent logic,
+enforced guardrails, and predictable output formats.
 
 ---
 
-## Five things these systems have in common
+## Engineering Principles
 
-**1. Cost governance is a design input.** Every system splits work across models by the judgment
-each task requires. Cheap models carry the volume. Expensive models are called once, where the
-decision lives.
+**1. Cost governance drives design.** Cheap models handle bulk volume; high-cost models execute only
+critical decision points. Every project publishes its unit cost.
 
-Two of them publish the full arithmetic, because token economics is what drove their architecture.
-The role matching pipeline runs under a hard 29 $ ceiling and reports its unit economics per
-source — three sources were cut on that table. The orchestrator's per-request cost was `MEASURED`
-at 0.25 $, the architecture was rebuilt around that number, and the rebuild is what runs today.
+**2. Multi-tiered guardrails.** Safety constraints are explicit and categorized by strength:
 
-The others put a unit cost on the page too, computed from their own token volumes at published
-prices and labelled `ESTIMATED`: a memo, a digest, a spoken question. Each one is shown next to
-what the expensive alternative would have cost, because that comparison is the decision. A design
-choice defended without a figure is an opinion.
-
-**2. The model is never trusted to be right — and the guardrails are not all equally strong.**
-Every system here controls invented output, but through mechanisms of different strength. Calling
-all of them a guarantee would flatter the weakest and devalue the strongest. So they are named
-separately across this repository:
-
-| Level | What it means | Where it applies |
+| Level | Definition | Example |
 |---|---|---|
-| **Structural** | An invalid output is mechanically impossible to produce | The **fact ceiling**: generation only removes text from a verified superset, so removal cannot fabricate |
-| **Verified** | The output is read back and compared against the input | Tracking-sheet writes, re-read and compared field by field; structured payloads in the digest, extracted from the input and checked against the output before it is sent |
-| **Constrained** | A prompt-level rule, not validated downstream | Payloads written in prose, which no regular expression extracts; the voice agent's refusal; the "to be confirmed" marker |
+| **Structural** | Invalid outputs are mechanically impossible | Removal-only operations from verified sets |
+| **Verified** | Outputs are checked against inputs programmatically | Field-by-field database write checks |
+| **Constrained** | Prompt-level rules without automated validation downstream | Instruction-following refusal prompts |
 
-`Structural` needs no trust. `Verified` catches the failure before it ships. `Constrained` asks the
-model to behave and does not check. Knowing which one you have is the difference between
-hallucination control and hoping.
+**3. Reliable writes require post-verification.** Webhooks returning status 200 do not guarantee DB
+persistence. Systems read back rows to verify integrity.
 
-The weakest of the three is measured rather than asserted. See the
-[eval harness](./channel-digest-agent/evals) for verbatim preservation, and for the boundary
-between what the validator catches and what only the prompt protects.
+**4. Idempotent, safe execution.** Scheduled tasks persist state to prevent duplicate processing.
+Unhandled errors trigger alerts to human operators.
 
-**3. A success response is not proof of success.** Webhooks that returned 200 without writing
-anything are why the pipeline now applies deterministic validation: it reads its rows back and
-compares them field by field.
-
-**4. Nothing here needs a human watching it.** The scheduled systems are idempotent and safe to
-restart. Processed identifiers are persisted so a retry never duplicates work, and each pipeline
-stage isolates its own failures — with something downstream that still knows a stage failed. That
-last clause is the part that is easy to get wrong.
-
-**5. Every figure carries its evidence label.** `MEASURED` on a running system, `ESTIMATED`
-computed from that system's own volumes at published prices, `DESIGN TARGET` for a number an
-architecture was built to hit and has not yet been re-measured against.
+**5. Labeled data metrics.** Metrics are strictly labeled as `MEASURED` (production data),
+`ESTIMATED` (calculated from volume/pricing), or `DESIGN TARGET`.
 
 ---
 
-## How these were built
+## System Design & Operational Model
 
-I specified, architected and operate every system here, working with AI coding agents. That is the
-point of the portfolio.
-
-Getting an AI system into production means holding the parts an agent will not hold for you: what
-the thing is for, where its output must never be trusted, what it is allowed to cost, and when to
-cut a component that is not earning its keep. Those are the decisions documented here.
+Architectures, workflow graphs, and guardrails are manually designed. Coding agents handle
+implementation details under strict parameters: explicit SOPs, isolated failure boundaries, and
+continuous evaluation loops.
 
 ---
 
-## A note on names
+## Privacy Note
 
-Client, prospect, employer and personal names are replaced by placeholders throughout, including
-inside the published procedures. Technology vendors are named as they are. That is the stack, and
-naming it is how the reader judges the work.
+All sensitive names, clients, and proprietary identifiers have been sanitized with placeholders.
 
 ---
 
