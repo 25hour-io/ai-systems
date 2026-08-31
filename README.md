@@ -17,12 +17,12 @@ unit costs.
 
 | System | Function | Status |
 |---|---|---|
-| [**Vox Memo**](./vox-memo) | Knowledge capture & semantic retrieval (web + Android) | Live · ~62 memos/month |
-| [**Channel Digest Agent**](./channel-digest-agent) | Filters, translates, and extracts actions from channels | Live · ~100 msgs/day |
-| [**Multi-Agent Orchestrator**](./multi-agent-orchestrator) | Routing layer across 10 specialized domain agents | Live · 10 agents active |
-| [**Role Matching Pipeline**](./role-matching-pipeline) | Role sourcing & candidate scoring under strict cost caps | Live · 2x daily |
-| [**Voice Knowledge Agent**](./voice-knowledge-agent) | Hands-free product Q&A grounded in enterprise corpus | Live · Internal deployment |
-| [**n8n-nodes-sse-client**](./n8n-sse-node) | Open-source n8n node for Server-Sent Events | [npm](https://www.npmjs.com/package/n8n-nodes-sse-client) · ~800 installs |
+| [**Vox Memo**](./vox-memo) | Knowledge capture & semantic retrieval (web + Android) | Live |
+| [**Channel Digest Agent**](./channel-digest-agent) | Filters, translates, and extracts actions from channels | Live |
+| [**Multi-Agent Orchestrator**](./multi-agent-orchestrator) | Routing layer across 10 specialized domain agents | Live |
+| [**Role Matching Pipeline**](./role-matching-pipeline) | Role sourcing & candidate scoring under strict cost caps | Live |
+| [**Voice Knowledge Agent**](./voice-knowledge-agent) | Hands-free product Q&A grounded in enterprise corpus | Live |
+| [**n8n-nodes-sse-client**](./n8n-sse-node) | Open-source n8n node for Server-Sent Events | [npm](https://www.npmjs.com/package/n8n-nodes-sse-client) |
 
 ---
 
