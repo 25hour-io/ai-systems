@@ -1,109 +1,73 @@
 # Agent skills
 
-A skill is an operating procedure an agent executes: written once, versioned, and run the same way
-every time by whoever needs it.
+A skill is a versioned standard operating procedure executed by an agent: defined scope, fixed
+sequence, explicit guardrails, and predictable output. It enforces standardisation so the same
+inputs consistently generate deliverables with identical structure and quality.
 
-That is the difference between using AI and enabling it. A prompt typed into a window solves one
-problem for one person and disappears. A skill carries expertise that someone else can run without
-holding the expertise themselves.
-
-Three are published here, covering three different jobs. Two of them, `application-builder` and
-`interview-trainer`, are one product: the procedures a career coach runs with a client, from the
-application that goes out to the rehearsal before the interview. They pair with the
-[role matching pipeline](../role-matching-pipeline), which finds the postings in the first place.
+Three skills are showcased below. `application-builder` and `interview-trainer` form a career
+coaching suite paired with the [role matching pipeline](../role-matching-pipeline), while
+`prospect-pitch` automates client pitch creation.
 
 ---
 
 ## [`prospect-pitch`](./prospect-pitch.md) — client deliverable
 
-Built for a communications agency. Turns a prospect's name and website into a standalone,
-interactive, bilingual pitch document ready to present.
+Built for a communications agency. Converts a prospect's name and URL into a bilingual (FR/HE) pitch
+package: an interactive HTML document and an aligned PPTX deck generated from a single analysis to
+ensure consistency.
 
-The agent researches the prospect, analyses the target market on four axes (market, customers,
-competition, environment), matches the prospect against the agency's existing client roster,
-selects relevant media from its portfolio, and generates the document.
+The agent conducts research across four axes (market, customers, competition, environment), matches
+findings with agency portfolio references, and outputs tailored recommendations.
 
-Three things make it worth reading.
+**1. Strict adherence to agency design systems.** Enforces brand tokens via CSS custom properties,
+handles Hebrew RTL layout automatically, and follows explicit visual rules (no pictograms, no forced
+capitals, layout-driven hierarchy).
 
-**1. Regulatory constraints drive the output.** For alcohol brands entering France, the agent
-applies the Loi Évin — advertising is banned on television and in cinema — so it removes those
-channels from the media mix and argues press, digital, framed radio and PR instead. Compliance is a
-filter inside the procedure, ahead of the recommendation.
+**2. Embedded regulatory compliance.** Automatically adapts strategies to legal frameworks, such as
+excluding TV and cinema channels for alcohol brands entering France under Loi Évin.
 
-**2. It refuses to force a match.** Verbatim from the skill:
+**3. Strict anti-hallucination rules.** Direct directive from the skill:
 
-> **ABSOLUTE RULE — never invent.** Where no credible link exists, say so plainly and open a
-> "New opportunity" section: position the prospect as the agency's first reference in a category.
-> Do not force a shaky analogy.
+> **ABSOLUTE RULE — never invent.** Where no credible link exists, state it plainly and open a "New
+> opportunity" section to position the prospect in a new category. Never force a weak match.
 
-Same for pricing: budget bands are indicative and marked "to be confirmed", never invented.
-
-**3. Bilingual output with script direction.** Every string carries French and Hebrew variants;
-switching languages flips `dir="rtl"` and swaps in Hebrew typefaces. Where a Hebrew translation is
-unfinished, the document falls back to French and says so on a banner rather than shipping a
-half-translated page.
-
-## [`application-builder`](./application-builder.md) — recruitment documents under a fact ceiling
-
-Built for a career coach. Produces a tailored CV and cover letter for a client, from a job posting.
-
-The reason it exists as a written procedure rather than a habit: a coach who tailors twenty
-applications a week cannot re-derive the rules each time, and cannot let quality drift between the
-first client of the month and the last.
-
-The mechanism is `Structural`, and it is the same one described in the
-[role matching pipeline](../role-matching-pipeline). The source CV is a verified superset,
-deliberately too long to send. Each application is a copy that is only ever **cut down**. Removal
-cannot fabricate.
-
-A fact missing from the template is escalated to the coach and added to the template. It never
-enters a generated document directly. The agent prepares; the coach reviews, the client sends.
-
-Then comes the part most procedures leave out. The skill documents where its own guarantee stops. A
-second model reviews the letter for style, and that model receives none of the rules — no fact
-ceiling, no protected formulas. So the skill lists the six things to check on its output before
-anyone sees it. **Naming where a guarantee ends is part of the guarantee.**
-
-## [`interview-trainer`](./interview-trainer.md) — training simulation
-
-The other half of the coaching product. Runs a spoken mock interview in French, English or Hebrew:
-the interviewer speaks aloud, the client answers, every answer is debriefed in writing, and the
-session ends in a written report the coach can work from.
-
-It is the piece a coach cannot scale by hand. Rehearsal only works if it is repeated, and no coach
-bills for the fourth run of the same question set.
-
-It reads the documents that were actually sent for that application, so the questions come from the
-real file rather than from a generic bank.
-
-It runs on two surfaces: a desktop version driving local speech synthesis, and a mobile version
-packaged for a phone, because full voice mode lives in the mobile app. Both are generated from one
-source file, so the two surfaces cannot drift apart.
-
-The Hebrew mode carries a piece of linguistic engineering worth reading on its own. Everyday Hebrew
-is written without vowels, so a speech engine has to guess and gets it wrong. The skill specifies
-exactly which vocalisation marks to write and which to omit: the dagesh comes out because it is no
-longer heard in speech, except on the three letters where it changes the consonant outright. Wrong
-vocalisation is worse than none.
+Pricing bands are strictly marked as "to be confirmed" rather than estimated.
 
 ---
 
-## What runs through all three
+## [`application-builder`](./application-builder.md) — tailored documents by subtraction
 
-**Every skill names what it must never make up.** They do not all enforce it the same way, and the
-difference is stated rather than blurred:
+Generates targeted CVs and cover letters from job postings.
+
+Uses a **Structural** approach based on a master CV template. Deliverables are created purely by
+**trimming irrelevant data**, mechanically eliminating the risk of fabricated experience.
+
+Missing details trigger an escalation to the coach to update the core template. An automated style
+check reviews output formatting prior to delivery.
+
+---
+
+## [`interview-trainer`](./interview-trainer.md) — voice interview simulation
+
+Runs interactive mock interviews in French, English, or Hebrew featuring spoken questions, oral
+responses, real-time written debriefs, and a summary report for the coach.
+
+**Cross-platform voice loop (TTS/STT).** Operates smoothly across desktop (local speech synthesis
+and dictation) and mobile assistant modes using tailored application context.
+
+**Hebrew text-to-speech optimisation.** Prescribes the niqqud that resolves pronunciation ambiguity,
+and transports Hebrew base64-encoded to keep alphabet and direction handling out of the path.
+
+---
+
+## Shared architectural guardrails
+
+Each skill enforces precise controls to prevent factual invention:
 
 | Skill | Guardrail | Level |
 |---|---|---|
-| `application-builder` | the fact ceiling — generation only removes from a verified superset | **Structural** |
-| `prospect-pitch` | the absolute matching rule, the "to be confirmed" pricing marker | **Constrained** |
-| `interview-trainer` | model answers composed only of template facts | **Constrained** |
+| `application-builder` | Subtraction-only generation from verified profile data | **Structural** |
+| `prospect-pitch` | Strict matching rule and "to be confirmed" pricing flags | **Constrained** |
+| `interview-trainer` | Model answers restricted strictly to template facts | **Constrained** |
 
-Only the first is mechanical. The other two are prompt-level rules that hold because the procedure
-names them and a human reads the output. See the levels in the
-[repository README](../README.md).
-
-**Human-in-the-loop by design.** These skills prepare work. They do not send it. On the one
-guardrail that is `Constrained` and carries real consequence — a second model rewriting a letter
-with none of the rules — the procedure lists the six things to check on its output before anyone
-sees it.
+These skills prepare structured assets for final human review prior to sending.
