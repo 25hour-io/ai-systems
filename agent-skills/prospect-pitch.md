@@ -3,7 +3,7 @@ name: agency-pitch
 description: >-
   Generates a premium HTML prospecting dossier for [AGENCY] from a company name and a URL.
   Crawls the prospect's site, analyses its target market, connects it to [Agency]'s client
-  roster and media portfolio, and produces an interactive bilingual FR/HE pitch.
+  roster and media portfolio, and produces an interactive bilingual FR/HE pitch plus a matching PPTX deck.
   Use this skill AS SOON AS the user asks for a pitch, a prospecting dossier, a prospect
   analysis, an "[Agency] pitch", or supplies a company name and a URL to present to a
   prospect — even without saying the word "pitch". Always use it when preparing a commercial
@@ -13,7 +13,7 @@ description: >-
 # [Agency] Pitch — prospecting dossier
 
 Turns a prospect (name + URL) into a standalone, premium, bilingual French/Hebrew HTML dossier
-in [AGENCY]'s visual identity, ready to present.
+in [AGENCY]'s visual identity, plus a PPTX deck of the same content, ready to present.
 
 ## Expected input
 
@@ -127,6 +127,25 @@ Required sections (numbered contents 01→08):
 - Example: `pitch-clients/[Prospect Co]/pitch-prospect-co.html`.
 - Where filesystem access is unavailable in the conversation, generate the file and offer it for
   download, stating this target path.
+
+## Step 7 — PPTX export
+
+Generate both the HTML document (for reading) and the PPTX deck (for presenting) from the exact
+same analysis to maintain consistency.
+
+Use the `pptx` skill (pptxgenjs) to generate the slides following these guidelines:
+
+- **Brand Consistency**: Map HTML `:root` color tokens (ink, paper, accent, gold, blue) and
+  typography directly to the slide master. Preserve style rules (no pictograms or forced capitals).
+- **Structure**: Follow the dossier section order (01→08). Allocate one slide per section, except
+  for Target Market (4 slides: 1 per axis) and Mini-Proposal (4 slides: timeline, plus 3 pricing
+  tiers).
+- **Content Density**: Keep slides high-level with key arguments and 3–5 core points. Detailed
+  metrics and data sources remain in the HTML dossier.
+- **Language & Integrity**: Output in the requested meeting language. If translation is incomplete,
+  default to French and flag it. Never invent data; apply standard fallback rules and pricing
+  markers.
+- **Output Path**: Save file to `pitch-clients/<Client name>/pitch-<prospect-slug>.pptx`.
 
 ## Condensed notes (where project files are unavailable)
 
