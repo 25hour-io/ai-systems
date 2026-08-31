@@ -1,100 +1,66 @@
 # Role Matching Pipeline
 
-Built for a career coach. Continuous role sourcing and candidate-role scoring for the clients they
-place, running unattended under a hard cost ceiling.
+An automated sourcing and candidate-role scoring system built for career coaching, designed to
+operate continuously within strict financial constraints.
 
-Twice every working day it pulls new postings from every configured source, drops what it has
-already seen, scores each remaining role against a client's structured profile, files the survivors
-in a tracking sheet and sends the coach a digest.
-
-**Live**, twice a day, five days a week. Runs in a cloud sandbox with no human in the loop.
-
-The economics are what make this a coaching product rather than a script. A coach carries several
-clients at once and bills a flat fee per engagement, so the sourcing cost per client is a margin
-line, not a rounding error. That constraint is the reason for everything below.
+Running twice daily, it aggregates postings from all sources, filters duplicates, scores candidates
+using structured profiles via LLM, logs qualified leads to a tracking sheet, and emails a daily
+summary digest.
 
 ```
 sources.json → scrape → dedupe against seen.json
-             → [LLM] extract + score against the profile
+             → [LLM] extract + score against profile
              → tracking sheet + email digest
              → commit seen IDs → git push
 ```
 
-Deterministic I/O lives in scripts. The LLM handles the two steps a regular expression would get
-wrong: pulling structured postings out of raw markdown, and judging fit against a profile.
+Deterministic operations run via lightweight scripts; the LLM handles entity extraction from raw
+text and candidates' fit evaluations.
 
 ---
 
-## Running it on a budget
+## Cost & Source Optimization
 
-The scraping account is capped at **29 $ per cycle**. Past the cap the platform stops serving. This
-is a hard stop, not an overage charge.
-
-Two runs a day, five days a week, is about 22 days a cycle. So the real unit is **1.30 $ per day**,
-and every source gets budgeted against that ceiling rather than against whatever credit happens to
-be left.
-
-### The audit
-
-Source names are replaced by labels below. The reasoning is what transfers.
-
-`MEASURED` over one full billing cycle. Cost per run was measured per source, then cross-referenced
-against postings that actually cleared scoring:
+Scraping is strictly budgeted at **$29/billing cycle** ($1.30/day across 22 working days). To
+maximize efficiency, each source was audited over a full billing cycle:
 
 | Source | $/run | Verdict |
 |---|---|---|
-| Global board A | 0.102 | **84 % of all retained postings.** Keep |
-| Local board B | 0.088 | Delivers regularly. Keep |
-| Local board C | 0.131 | Delivers, most expensive of its group. Keep |
-| Global board D | 0.001 | Nearly free. Keep at low yield |
-| Agency feed E | **0.000** | Public feed, no scraping account involved |
-| ~~Local board F~~ | 0.152 | **Cut.** Zero postings retained, 100 % of spend |
-| ~~Local board G~~ | 0.082 | **Cut.** Zero postings, keyword matched accountants |
-| ~~Niche board H~~ | 0.050 | **Cut.** Zero postings since activation |
+| Global board A | 0.102 | **84% of retained postings.** Kept |
+| Local board B | 0.088 | Consistent output. Kept |
+| Local board C | 0.131 | High cost, consistent output. Kept |
+| Global board D | 0.001 | Low cost, low yield. Kept |
+| Agency feed E | **0.000** | Free public REST feed. Kept |
+| Local board F | 0.152 | **Removed.** 0 retained postings, high spend |
+| Local board G | 0.082 | **Removed.** 0 relevant postings (irrelevant matches) |
+| Niche board H | 0.050 | **Removed.** 0 postings found |
 
-Before: 0.61 $/run, ~26.5 $ per cycle — **91 % of the ceiling**.
-After: 0.33 $/run, ~14.5 $ per cycle — **45 % less, with retained postings unchanged**. `MEASURED`.
+**Impact:** Run costs dropped from $0.61 ($26.50/cycle) to $0.33 ($14.50/cycle)—a **45% cost
+reduction** with zero loss in retained job leads.
 
-### Look for a feed before paying a scraper
+### Key Technical Takeaways
 
-One agency exposed its entire catalogue — 1,144 postings with publication dates — over a public
-REST route on its WordPress install. Same data a paid scraper would return, for nothing, with no
-vendor in the loop.
-
-The habit generalises. On any WordPress site, read `/wp-json/` and look at the routes specific to
-that site. A feed also moves filtering to the client side, which is why sources here declare a
-`filter` block instead of passing a keyword to a vendor.
-
-One more finding worth the money it saved: **a scraper labelled FREE is not free.** You still pay
-for its compute. The one advertised that way was the most expensive line on the account.
+- **Public feeds over scrapers:** Leveraged public WordPress REST endpoints (`/wp-json/`) to extract
+  structured job posts without scraping costs.
+- **Client-side filtering:** Shifted filtering logic internally using declarative `filter` blocks to
+  eliminate vendor query fees.
 
 ---
 
-## Two controls against invented output
+## Guarantees Against Output Hallucinations
 
-One is `Structural`, one is `Verified` — see the levels in the [repository README](../README.md).
+**1. Subtractive Generation:** Candidate application documents are generated by removing
+non-matching information from a fully comprehensive, pre-verified master template
+([`application-builder`](../agent-skills/application-builder.md)). The model never writes new
+factual claims from scratch, eliminating fictional history.
 
-**`Structural` — removal cannot fabricate.** The candidate document template is a superset of
-verified facts, deliberately too long to send. Every generated document is a copy that only ever
-gets **cut down**. Starting from a long verified document and removing is structurally safe.
-Starting from a short one and filling it in is where hallucination gets in and a fictional employer
-appears on a CV. A missing fact is added to the template, never to a generated document.
-
-The procedure that enforces this is published as
-[`application-builder`](../agent-skills/application-builder.md).
-
-**`Verified` — a 200 response is not proof of a write.** The tracking sheet webhook returned
-success without writing anything. Worse, the underlying operation invented rather than complained:
-updating an absent identifier created a row, and sending an unknown field created a column — a
-clean 200 in both cases. So the pipeline now applies deterministic validation. It checks the row
-exists before writing, reads it back after, and compares field by field. Divergence exits non-zero.
+**2. Two-Way Write Verification:** Webhooks return HTTP 200 even when they silently fail, or when
+they create a row for an absent identifier and a column for an unknown field. The pipeline verifies
+row presence before writing, re-reads data post-write, and validates content integrity.
 
 ---
 
-## Code
+## Code Structure
 
-- [`feed.mjs`](./code/feed.mjs) — zero-cost sources: fetch a public feed, parse by declared
-  format, apply the declared filter, return normalised postings. No vendor, no dependency.
-- [`normalize.mjs`](./code/normalize.mjs) — normalisation and deduplication. Only a posting with
-  no title gets dropped; an unnamed employer is kept and labelled, because agency listings are
-  worth judging on the role alone.
+- [`feed.mjs`](./code/feed.mjs) — Fetches, parses, and filters zero-cost public feeds.
+- [`normalize.mjs`](./code/normalize.mjs) — Normalizes job structures and handles deduplication.
