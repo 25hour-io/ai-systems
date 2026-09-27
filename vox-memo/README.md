@@ -15,6 +15,16 @@ written by the enrichment pipeline.*
 
 ---
 
+## Business use and people
+
+Teams lose context when useful notes are hard to find or live only in one person's memory. Vox Memo
+makes captured knowledge searchable by meaning, so it can be retrieved and reused in collaboration.
+AI handles filing and linking; people decide what to record, share, and use.
+
+We led the product end to end at 25hour, from specifications and product requirements through design,
+implementation, training, adoption, and operation. About 62 memos captured per month is a usage
+figure. It does not establish how many people or teams use the product.
+
 ## Core Purpose
 
 Automates note organization at capture time, making the entire memory corpus searchable by semantic
@@ -71,4 +81,6 @@ vector embedding and indexing. Asynchronous processing prevents serverless execu
 ## Cost Efficiency
 
 A standard text memo costs **~$0.004** via Claude Haiku 4.5 (enrichment) and **~$0.00004** via
-OpenAI embeddings, keeping total monthly operating costs well under $1.00.
+OpenAI embeddings. At the observed volume, the estimated AI processing cost is under $1.00 per
+month, excluding hosting and other services.
+
