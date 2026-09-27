@@ -6,6 +6,16 @@ and generates structured digests featuring explicit action items.
 **Live in production since May 2026.** Runs every minute via a 30-node n8n workflow linked to
 WhatsApp (~100 messages/day across 6 channels).
 
+## Business use and people
+
+Busy channels make people spend time separating useful information from noise. The digest helps teams
+focus on discussions and actions that matter, including messages in a language they do not read
+fluently. It prepares a shorter view; the people receiving it still decide priorities and act.
+
+We led this system end to end at 25hour: specifications and product requirements, workflow design,
+implementation, evaluation, training, adoption, and operation. The message volume above is observed
+usage, not a measured time-saving figure.
+
 ---
 
 ## The problem
@@ -84,18 +94,20 @@ Review the full prompt: [`system-prompt.md`](./system-prompt.md).
 Sonnet synthesizes the overall conversation context once per cycle. Operating cost: **~$0.60/day
 ($15–$20/month)**.
 
-**Zero round-trip principle.** Eliminates the need to open source channels. General narrative is
+**Reduced channel checking.** The digest reduces routine visits to source channels while keeping the
+original discussion available when context is needed. General narrative is
 summarized, while critical actionable data (URLs, amounts, phone numbers, codes) is copied verbatim.
 
 **Automated verification layer.** A post-processing script ([`validate.mjs`](./evals/validate.mjs))
-uses regex validation to ensure structured payload items are preserved, blocking any digest that
-loses one.
+checks the structured payloads it can recognize and blocks a digest when one of those is missing.
+The [evaluation](./evals) documents what this validator does not catch.
 
 **Bi-directional text handling.** Every generated line opens with a Latin script prefix to force
 left-to-right alignment and maintain optimal readability across multi-lingual chats.
 
 **Media forwarding & fault tolerance.** Referenced media files are forwarded directly alongside
-digests. Processed states are saved strictly post-delivery to guarantee idempotency across retries.
+digests. Processed states are saved after delivery to reduce the risk of messages being skipped
+after a failed send. A delivery that succeeds before the state update may still be repeated.
 
 ---
 
@@ -109,3 +121,4 @@ Core n8n Code nodes:
   chronological order.
 - [`commit-processed-ids.js`](./code/commit-processed-ids.js) — Manages safe state updates for
   processed message tracking.
+
