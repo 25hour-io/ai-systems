@@ -1,20 +1,29 @@
 # Voice Knowledge Agent
 
-A real-time voice RAG system that answers spoken queries strictly from an indexed internal corpus.
+A voice knowledge system designed to give field sales teams access to product information
+without manual search.
 
-**Status: Deployed (Internal Access).** Real-time STT/TTS via WebSocket, vector retrieval via
-Supabase pgvector.
+**Status: Functional prototype, not deployed for business users.** It uses real-time voice
+input and output via WebSocket and vector retrieval via Supabase pgvector.
+
+## Business use and people
+
+Designed for field salespeople who need product information between customer visits, the system
+answers spoken questions using company documents. A salesperson would still
+verify consequential details and decide what to tell a customer.
+
+We developed the system at 25hour from specifications and product requirements through design
+and implementation.
 
 ---
 
 ## Use Case & Purpose
 
-Built for field sales reps driving between customer sites who require hands-free, instant access to
-technical specs and stock availability. Voice input eliminates manual search friction in a moving
-vehicle.
+Designed for field sales representatives who need hands-free access to technical specifications
+between customer visits. The prototype tests whether voice input can reduce manual search friction.
 
-*Note: This repository covers the documentation retrieval pipeline (corpus, indexing, vector
-search). Stock checks query live systems of record directly.*
+*Note: This prototype covers the documentation retrieval pipeline (corpus, indexing, vector
+search). A production stock check would need to query a live system of record directly.*
 
 ---
 
@@ -27,15 +36,17 @@ Next.js 16, React 19, TypeScript · WebSocket real-time voice API · Supabase pg
 
 ## Grounding & Reliability
 
-Spoken errors carry false confidence and leave no visual trail. Grounding is enforced:
+Spoken errors can carry false confidence and leave no visual trail. The prototype uses these
+controls; formal evaluation is still planned:
 
-**1. Retrieve First, Answer Second:** The model composes answers exclusively from passages pulled
-from the vector store.
+**1. Retrieve First, Answer Second:** The model is instructed to compose answers from passages
+pulled from the vector store. This instruction is not a guarantee of factual accuracy.
 
-**2. Explicit Refusal:** Weak or empty retrievals trigger a clear "I don't have that information."
+**2. Explicit Refusal:** The agent is instructed to say "I don't have that information" for weak
+or empty retrievals.
 
-**3. Network Isolation:** Eliminates external web search to keep the corpus auditable and avoid
-unverified figures.
+**3. Network Isolation:** The answering flow does not search the open web, so its documented
+sources can be reviewed. This does not by itself guarantee that an answer is correct.
 
 ---
 
@@ -64,13 +75,13 @@ flowchart LR
 
 ## Cost Architecture
 
-**Retrieval:** Effectively free (~$0.0000004 per query using `text-embedding-3-small` + pgvector
-lookup).
+**Retrieval cost estimate:** ~$0.0000004 per query for the embedding model, excluding storage,
+voice, hosting, and other operating costs.
 
 **Voice API:** Dominates running costs (billed per minute of audio in/out).
 
-**Scalability:** Expanding the corpus tenfold does not increase per-question cost, scaling cleanly
-with user interaction time.
+**Scalability:** A larger corpus need not increase the embedding charge for each question, though
+storage, index maintenance, retrieval performance, and voice usage may change total cost.
 
 ---
 
@@ -78,3 +89,4 @@ with user interaction time.
 
 Future work includes automated document re-indexing for updated specs and formal eval benchmarks
 against labeled test sets.
+

@@ -1,8 +1,8 @@
 # Evaluation — Payload Preservation
 
 The [Channel Digest Agent](..) must reproduce critical payloads verbatim (URLs, amounts, codes,
-contacts). Paraphrasing actionable details destroys their utility. This evaluation harness verifies
-strict compliance.
+contacts). Paraphrasing actionable details destroys their utility. This evaluation harness measures
+how often critical details are preserved.
 
 **Run date:** 2026-08-26 · **Model:** `gpt-4o` (temp 0) · **Test cases:** 40 · **v2 deployed:** Same
 day
@@ -52,8 +52,8 @@ regex and blocking incomplete digests.
 
 Guardrails are classified into two tiers:
 
-- **`Verified`:** Structured data (URLs, emails, numbers, dates) verified deterministically via
-  code.
+- **`Verified`:** Structured data recognized by the extractor is checked deterministically. The
+  extractor recalled 31 of 38 benchmark payloads, so this is a partial check.
 - **`Constrained`:** Prose payloads (dates in words, informal quantities) protected solely by prompt
   rules.
 
@@ -72,7 +72,9 @@ node run.mjs --out results.json   # Export metrics
 
 ## Deployment Status
 
-**Prompt v2 & `validate.mjs` are active in production.** Structured payload losses are blocked prior
-to delivery. Prose payloads remain under continuous evaluation.
+**Prompt v2 & `validate.mjs` are active in production.** The validator blocks a digest when it detects
+that a recognized structured payload was lost. Payloads the extractor misses and prose payloads
+remain outside that automated check.
 
 [`system-prompt.v1.md`](./system-prompt.v1.md) remains stored as the baseline benchmark.
+

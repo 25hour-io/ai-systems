@@ -3,6 +3,15 @@
 A unified conversational orchestration layer (internal codename: *Hubert*) routing query intents
 across integrated enterprise tools via dedicated sub-agents on Anthropic Managed Agents.
 
+## Business use and people
+
+A user can ask for help across scheduling, communications, CRM, and internal knowledge without
+switching tools for every step. The system routes the request to the relevant specialist; people
+remain responsible for decisions and review consequential actions.
+
+We led the work at 25hour from specifications and product requirements through architecture,
+implementation, training, adoption, and operation. Ten specialist agents are deployed.
+
 | Agent | Surface Area |
 |---|---|
 | Calendar / Gmail / Google Workspace | Scheduling & Communication |
@@ -19,9 +28,9 @@ across integrated enterprise tools via dedicated sub-agents on Anthropic Managed
 The original monolithic architecture loaded 14 MCP servers (~140 tools, ~57k tokens) into every
 request, resulting in high operational costs driven primarily by tool definitions (~70%).
 
-- **Legacy Monolith:** `$0.25 / request` (Tool schemas bloat context windows).
-- **Modular Router Architecture:** `~$0.006 / request` (~40x reduction via dynamic sub-agent
-  routing).
+- **Before redesign — measured:** `$0.25 / request` (tool definitions inflated the context).
+- **After redesign — measured:** `~$0.006 / request` (roughly 40x lower per request through
+  dynamic routing).
 - **Model Tiering:** Lightweight models handle routing and simple operations; larger models are
   invoked exclusively for complex tasks (e.g., email drafting).
 
@@ -93,3 +102,4 @@ TTS, text-in / text-out).
   base64 blocks via `getBinaryDataBuffer()`.
 - [`extract-response.js`](./code/extract-response.js) — Extracts the final agent response from the
   raw SSE stream.
+
