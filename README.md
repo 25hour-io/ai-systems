@@ -20,7 +20,7 @@ This repository is a selected portfolio of that work. Start with the business us
 | --- | --- | --- |
 | [Multi-Agent Orchestrator](./multi-agent-orchestrator) | Bring several business tools into one conversational workflow while controlling operating cost. | Live; 10 specialised agents deployed. |
 | [Role Matching Pipeline](./role-matching-pipeline) | Help a career coach find and review relevant opportunities within a fixed sourcing budget. | Live; runs twice daily. |
-| [Voice Knowledge Agent](./voice-knowledge-agent) | Explore hands-free access to product knowledge for field sales. | **Self-initiated prototype**; works end to end, not deployed for business users. |
+| [Voice Knowledge Agent](./voice-knowledge-agent) | Explore hands-free access to product knowledge for field sales. | Functional prototype; not deployed for business users. |
 | [n8n-nodes-sse-client](./n8n-sse-node) | Let n8n workflows consume live event streams during execution. | Open-source component published on npm; about 800 downloads in the past year. |
 
 [Agent skills](./agent-skills) are versioned procedures for repeatable work. They specify the task, inputs, sequence, controls, and expected deliverables. The published examples cover sales pitches and career coaching. A procedure makes expertise easier to share, while each output still needs the checks appropriate to its use.
@@ -28,7 +28,6 @@ This repository is a selected portfolio of that work. Start with the business us
 ## What we own from brief to adoption
 
 Our work spans the full path: understand the users and their current process; write specifications and product requirements; choose the system design and cost limits; build and evaluate it; document it; train people to use it; and improve it after launch. The case studies show the decisions made at each stage, including where human review remains necessary.
-The self-initiated voice prototype stops before client rollout and adoption.
 
 ## Evidence, costs, and limits
 
