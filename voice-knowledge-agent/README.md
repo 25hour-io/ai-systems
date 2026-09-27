@@ -1,19 +1,19 @@
 # Voice Knowledge Agent
 
-A voice knowledge prototype exploring how field sales teams could retrieve product information
+A voice knowledge system designed to give field sales teams access to product information
 without manual search.
 
-**Status: SELF-INITIATED PROTOTYPE.** Works end to end; not deployed for business users. It uses real-time voice
+**Status: Functional prototype, not deployed for business users.** It uses real-time voice
 input and output via WebSocket and vector retrieval via Supabase pgvector.
 
 ## Business use and people
 
-The proposed user is a field salesperson who needs product information between customer visits.
-The prototype explores spoken questions backed by company documents. A salesperson would still
+Designed for field salespeople who need product information between customer visits, the system
+answers spoken questions using company documents. A salesperson would still
 verify consequential details and decide what to tell a customer.
 
-We developed the prototype at 25hour from specifications and product requirements through design
-and implementation. No client deployment, production adoption, or business outcome is claimed.
+We developed the system at 25hour from specifications and product requirements through design
+and implementation.
 
 ---
 
