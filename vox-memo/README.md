@@ -34,11 +34,11 @@ meaning rather than exact keywords.
 
 ## Tech Stack
 
-Next.js 16, React 19, TypeScript 5, Tailwind 4 · Supabase (Postgres, pgvector, Storage, Auth) ·
-Capacitor (Android).
+Next.js 16, React 19, TypeScript 5, Tailwind 4 · Vercel (API routes) · Supabase (Auth, Postgres,
+pgvector, Storage, Realtime) · Capacitor 8 (Android).
 
-**AI Layer:** Claude Haiku 4.5 (enrichment & vision), OpenAI `text-embedding-3-small` (vectors),
-Deepgram Nova-3 (STT), Apify (web scraping).
+**AI Layer:** OpenAI `gpt-5.4-mini` (enrichment, image analysis, URL summaries, title backfill) and
+`text-embedding-3-small` (vectors) · Deepgram Nova-3 (speech-to-text) · Apify (URL crawling).
 
 ---
 
@@ -80,7 +80,7 @@ vector embedding and indexing. Asynchronous processing prevents serverless execu
 
 ## Cost Efficiency
 
-A standard text memo costs **~$0.004** via Claude Haiku 4.5 (enrichment) and **~$0.00004** via
-OpenAI embeddings. At the observed volume, the estimated AI processing cost is under $1.00 per
-month, excluding hosting and other services.
+The move to OpenAI changed the unit economics. A representative per-memo cost for the current
+stack has not yet been measured, so no monthly estimate is published here. Audio transcription
+and URL crawling add usage-based costs when needed.
 
