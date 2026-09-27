@@ -41,5 +41,6 @@ processes continuous event flows and reliably disconnects upon reaching
 
 ## Adoption & Maintenance
 
-Maintained under strict semantic versioning and backward compatibility for ~800 installs over the
-past year.
+Maintained with semantic versioning and backward compatibility. The npm package recorded about
+800 downloads over the past year; this is not a count of unique users or active installations.
+
